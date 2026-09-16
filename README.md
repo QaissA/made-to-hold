@@ -50,7 +50,7 @@ npm run dev
 
 - Strategy: **IBL + N8AO** (SSGI not yet)
 - Toggle **N8AO** in the light panel to A/B ambient occlusion
-- Tone mapping remains AgX on the renderer (no composer ToneMapping)
+- When N8AO is on, the composer applies the view transform (`ToneMapping`); when off, AgX stays on the renderer
 - Playbook: `docs/playbooks/gi-ao.md`
 
 ## Status

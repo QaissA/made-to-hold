@@ -63,7 +63,7 @@ export function Scene({
         <GroundTruth />
         {lightFlags.contactShadows && <ContactShadowGround />}
       </Suspense>
-      <PostFX enabled={lightFlags.n8ao} />
+      <PostFX enabled={lightFlags.n8ao} toneMap={toneMap} />
     </Canvas>
   )
 }
