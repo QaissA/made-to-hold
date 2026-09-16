@@ -19,16 +19,18 @@ import { PostFX } from './PostFX'
 function ToneMappingApplier({
   toneMap,
   exposure,
+  n8aoEnabled,
 }: {
   toneMap: ToneMapPreset
   exposure: number
+  n8aoEnabled: boolean
 }) {
   const { gl } = useThree()
   useEffect(() => {
     gl.toneMapping = TONE_MAP_PRESETS[toneMap]
     gl.toneMappingExposure = exposure
     gl.outputColorSpace = OUTPUT_COLOR_SPACE
-  }, [gl, toneMap, exposure])
+  }, [gl, toneMap, exposure, n8aoEnabled])
   return null
 }
 
@@ -56,7 +58,11 @@ export function Scene({
       }}
       style={{ width: '100%', height: '100%' }}
     >
-      <ToneMappingApplier toneMap={toneMap} exposure={exposure} />
+      <ToneMappingApplier
+        toneMap={toneMap}
+        exposure={exposure}
+        n8aoEnabled={lightFlags.n8ao}
+      />
       <color attach="background" args={['#111']} />
       <Suspense fallback={null}>
         <Lighting flags={lightFlags} />
