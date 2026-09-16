@@ -14,6 +14,7 @@ import {
 import { ContactShadowGround } from './ContactShadowGround'
 import { GroundTruth } from './GroundTruth'
 import { Lighting } from './Lighting'
+import { PostFX } from './PostFX'
 
 function ToneMappingApplier({
   toneMap,
@@ -62,6 +63,7 @@ export function Scene({
         <GroundTruth />
         {lightFlags.contactShadows && <ContactShadowGround />}
       </Suspense>
+      <PostFX enabled={lightFlags.n8ao} />
     </Canvas>
   )
 }

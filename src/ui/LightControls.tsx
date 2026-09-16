@@ -12,6 +12,7 @@ const LABELS: { key: keyof LightFlags; label: string }[] = [
   { key: 'rim', label: 'Rim' },
   { key: 'area', label: 'Area (+proxy)' },
   { key: 'contactShadows', label: 'ContactShadows' },
+  { key: 'n8ao', label: 'N8AO' },
 ]
 
 export function LightControls({ flags, onChange }: Props) {
