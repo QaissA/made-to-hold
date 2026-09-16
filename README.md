@@ -27,6 +27,18 @@ Optional:
 
 Agents: start at [`AGENTS.md`](AGENTS.md).
 
+## Phase 1 — Color foundation
+
+```bash
+npm install
+npm run dev
+```
+
+- Default view transform: **AgX** (Blender 4.x default)
+- Use the on-screen control to compare AgX / None / Neutral
+- Sample HDRI: `public/hdri/studio.hdr` (see ATTRIBUTION.md)
+- Checklist: `docs/playbooks/color-foundation.md`
+
 ## Status
 
 Documentation and Cursor rules first. Application scaffold comes later.
