@@ -1,0 +1,11 @@
+---
+description: Path C hero pathtracer — not interactive default
+globs: src/render/**
+alwaysApply: false
+---
+
+# Pathtracer (Path C)
+
+- Progressive hero/stills only (`three-gpu-pathtracer`).
+- Share Path A scene graph; do not replace realtime default.
+- Playbook: `docs/playbooks/path-c-pathtracer.md`

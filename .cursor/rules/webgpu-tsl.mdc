@@ -1,0 +1,12 @@
+---
+description: Path B WebGPU/TSL migration conventions
+globs: src/**/*webgpu*,src/**/*tsl*
+alwaysApply: false
+---
+
+# WebGPU / TSL (Path B)
+
+- Only when user opted into Path B.
+- Keep AgX + color-space rules identical to Path A.
+- Prefer TSL for new shader work; verify effect library support.
+- Playbook: `docs/playbooks/path-b-webgpu.md`

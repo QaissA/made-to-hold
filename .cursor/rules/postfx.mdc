@@ -1,0 +1,13 @@
+---
+description: EffectComposer pass order and encoding
+globs: src/canvas/PostFX*,src/**/post*
+alwaysApply: false
+---
+
+# Post-FX
+
+Order: N8AO → SSGI/SSR → Bloom → DOF → TRAA/SMAA.  
+Single output encoding — do not tone-map twice.  
+Pin `realism-effects` when used.
+
+Playbook: `docs/playbooks/post-aa.md`
