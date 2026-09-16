@@ -1,0 +1,14 @@
+---
+description: Default Eevee-parity render stack (Path A) and color non-negotiables
+alwaysApply: true
+---
+
+# Project render stack
+
+- Default interactive path: **Path A** (WebGL2 + screen-space). Not Path B/C unless the user asks.
+- Color: `AgXToneMapping` + `SRGBColorSpace` output. Match Blender 4.x AgX.
+- Textures: albedo/emissive sRGB; normal/rough/metal/AO linear.
+- Before changing look: read `AGENTS.md` and `docs/playbooks/color-foundation.md`.
+- Pin `realism-effects` if used. Prefer N8AO over default SSAO.
+- Do not claim true SSS or RectAreaLight shadows exist — see `docs/reference/known-gaps.md`.
+- Canon: `docs/architecture/eevee-parity.md`.
