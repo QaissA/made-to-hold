@@ -1,0 +1,14 @@
+---
+description: IBL, lights, and area-light shadow mitigations
+globs: src/canvas/Lighting*,src/**/light*
+alwaysApply: false
+---
+
+# Lighting
+
+- Same HDRI as Blender via `<Environment />`.
+- `RectAreaLight`: add shadow proxy, AccumulativeShadows, or bake — never assume native shadows.
+- Hero shadows: mapSize 2048–4096; tune bias/normalBias.
+- ContactShadows / SoftShadows / AccumulativeShadows per playbook.
+
+Playbook: `docs/playbooks/lighting-shadows.md`

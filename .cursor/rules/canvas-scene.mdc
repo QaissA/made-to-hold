@@ -1,0 +1,23 @@
+---
+description: Canvas / renderer config for Eevee-parity color and shadows
+globs: src/canvas/**
+alwaysApply: false
+---
+
+# Canvas scene
+
+```js
+// ✅
+gl={{
+  toneMapping: THREE.AgXToneMapping,
+  toneMappingExposure: 1.0,
+  outputColorSpace: THREE.SRGBColorSpace,
+}}
+shadows="soft" // or explicit soft/VSM setup
+dpr={[1, 2]}
+
+// ❌ NoToneMapping / ACES when matching Blender AgX default
+// ❌ Double tone-map in post + renderer
+```
+
+Playbook: `docs/playbooks/color-foundation.md`

@@ -1,0 +1,15 @@
+---
+description: Principled/glTF materials and texture color spaces
+globs: src/materials/**,**/*Material*
+alwaysApply: false
+---
+
+# Materials
+
+- Principled → `MeshStandardMaterial` / extras → `MeshPhysicalMaterial`.
+- Prefer glTF + `KHR_materials_*` via `useGLTF`.
+- Color maps: `SRGBColorSpace`. Data maps: linear.
+- Transmission: Physical or `MeshTransmissionMaterial` (screen-space).
+- No true SSS — thickness/attenuation or custom only; say so.
+
+Playbook: `docs/playbooks/color-foundation.md` · Gaps: `docs/reference/known-gaps.md`
