@@ -41,4 +41,4 @@ npm run dev
 
 ## Status
 
-Documentation and Cursor rules first. Application scaffold comes later.
+Phase 1 color foundation is scaffolded — run `npm run dev` to compare AgX / None / Neutral with the reference mid-gray and sample HDRI.

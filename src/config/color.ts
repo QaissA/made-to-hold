@@ -18,5 +18,5 @@ export const DEFAULT_TONE_MAP: ToneMapPreset = 'agx'
 export const DEFAULT_EXPOSURE = 1.0
 export const OUTPUT_COLOR_SPACE = SRGBColorSpace
 
-/** Mid-gray albedo for reference geometry (~18% gray). */
-export const REFERENCE_ALBEDO = '#2e2e2e'
+/** Mid-gray albedo for reference geometry (~18% gray under sRGB). */
+export const REFERENCE_ALBEDO = '#767676'
