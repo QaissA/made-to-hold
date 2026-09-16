@@ -39,6 +39,13 @@ npm run dev
 - Sample HDRI: `public/hdri/studio.hdr` (see ATTRIBUTION.md)
 - Checklist: `docs/playbooks/color-foundation.md`
 
+## Phase 2 — Lighting & shadows
+
+- Studio rig: key (shadowed) + fill + rim + RectAreaLight with Spot shadow proxy
+- Right-side toggles A/B each light and ContactShadows
+- Intensities: `src/config/lightUnits.ts` (hand-tuned, not Watts)
+- Playbook: `docs/playbooks/lighting-shadows.md`
+
 ## Status
 
-Phase 1 color foundation is scaffolded — run `npm run dev` to compare AgX / None / Neutral with the reference mid-gray and sample HDRI.
+Phase 1 color foundation and Phase 2 lighting rig are scaffolded — run `npm run dev` to compare AgX / None / Neutral and toggle studio lights / ContactShadows against the mid-gray reference and sample HDRI.
