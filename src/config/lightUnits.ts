@@ -27,6 +27,7 @@ export type LightFlags = {
   rim: boolean
   area: boolean
   contactShadows: boolean
+  n8ao: boolean
 }
 
 export const DEFAULT_LIGHT_FLAGS: LightFlags = {
@@ -36,4 +37,5 @@ export const DEFAULT_LIGHT_FLAGS: LightFlags = {
   rim: true,
   area: true,
   contactShadows: true,
+  n8ao: true,
 }
