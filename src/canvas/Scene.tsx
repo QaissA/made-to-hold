@@ -7,6 +7,11 @@ import {
   TONE_MAP_PRESETS,
   type ToneMapPreset,
 } from '../config/color'
+import {
+  DEFAULT_LIGHT_FLAGS,
+  type LightFlags,
+} from '../config/lightUnits'
+import { ContactShadowGround } from './ContactShadowGround'
 import { GroundTruth } from './GroundTruth'
 import { Lighting } from './Lighting'
 
@@ -29,11 +34,13 @@ function ToneMappingApplier({
 type SceneProps = {
   toneMap?: ToneMapPreset
   exposure?: number
+  lightFlags?: LightFlags
 }
 
 export function Scene({
   toneMap = DEFAULT_TONE_MAP,
   exposure = DEFAULT_EXPOSURE,
+  lightFlags = DEFAULT_LIGHT_FLAGS,
 }: SceneProps) {
   return (
     <Canvas
@@ -51,10 +58,10 @@ export function Scene({
       <ToneMappingApplier toneMap={toneMap} exposure={exposure} />
       <color attach="background" args={['#111']} />
       <Suspense fallback={null}>
-        <Lighting />
+        <Lighting flags={lightFlags} />
         <GroundTruth />
+        {lightFlags.contactShadows && <ContactShadowGround />}
       </Suspense>
-      <ambientLight intensity={0.05} />
     </Canvas>
   )
 }
