@@ -46,6 +46,13 @@ npm run dev
 - Intensities: `src/config/lightUnits.ts` (hand-tuned, not Watts)
 - Playbook: `docs/playbooks/lighting-shadows.md`
 
+## Phase 3 — GI & AO
+
+- Strategy: **IBL + N8AO** (SSGI not yet)
+- Toggle **N8AO** in the light panel to A/B ambient occlusion
+- Tone mapping remains AgX on the renderer (no composer ToneMapping)
+- Playbook: `docs/playbooks/gi-ao.md`
+
 ## Status
 
-Phase 1 color foundation and Phase 2 lighting rig are scaffolded — run `npm run dev` to compare AgX / None / Neutral and toggle studio lights / ContactShadows against the mid-gray reference and sample HDRI.
+Phase 1–3 scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows, and A/B N8AO against the mid-gray reference and sample HDRI.
