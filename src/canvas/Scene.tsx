@@ -9,6 +9,7 @@ import {
 } from '../config/color'
 import {
   DEFAULT_LIGHT_FLAGS,
+  isComposerActive,
   type LightFlags,
 } from '../config/lightUnits'
 import { ContactShadowGround } from './ContactShadowGround'
@@ -21,18 +22,18 @@ import { ReflectorFloor } from './ReflectorFloor'
 function ToneMappingApplier({
   toneMap,
   exposure,
-  n8aoEnabled,
+  composerActive,
 }: {
   toneMap: ToneMapPreset
   exposure: number
-  n8aoEnabled: boolean
+  composerActive: boolean
 }) {
   const { gl } = useThree()
   useEffect(() => {
     gl.toneMapping = TONE_MAP_PRESETS[toneMap]
     gl.toneMappingExposure = exposure
     gl.outputColorSpace = OUTPUT_COLOR_SPACE
-  }, [gl, toneMap, exposure, n8aoEnabled])
+  }, [gl, toneMap, exposure, composerActive])
   return null
 }
 
@@ -63,7 +64,7 @@ export function Scene({
       <ToneMappingApplier
         toneMap={toneMap}
         exposure={exposure}
-        n8aoEnabled={lightFlags.n8ao}
+        composerActive={isComposerActive(lightFlags)}
       />
       <color attach="background" args={['#111']} />
       <Suspense fallback={null}>
@@ -74,7 +75,7 @@ export function Scene({
           <ContactShadowGround />
         )}
       </Suspense>
-      <PostFX enabled={lightFlags.n8ao} toneMap={toneMap} />
+      <PostFX flags={lightFlags} toneMap={toneMap} />
     </Canvas>
   )
 }
