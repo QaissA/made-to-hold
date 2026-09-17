@@ -11,8 +11,8 @@ export function NavControls({ mode, onModeChange, disabled }: Props) {
     <div
       style={{
         position: 'absolute',
-        top: 12,
-        right: 12,
+        top: 56,
+        left: 12,
         zIndex: 10,
         display: 'flex',
         gap: 12,
