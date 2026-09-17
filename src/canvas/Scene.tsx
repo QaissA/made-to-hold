@@ -12,9 +12,11 @@ import {
   type LightFlags,
 } from '../config/lightUnits'
 import { ContactShadowGround } from './ContactShadowGround'
-import { GroundTruth } from './GroundTruth'
+import { GlassSphere } from './GlassSphere'
+import { OpaqueSphere, PlainGround } from './GroundTruth'
 import { Lighting } from './Lighting'
 import { PostFX } from './PostFX'
+import { ReflectorFloor } from './ReflectorFloor'
 
 function ToneMappingApplier({
   toneMap,
@@ -66,8 +68,11 @@ export function Scene({
       <color attach="background" args={['#111']} />
       <Suspense fallback={null}>
         <Lighting flags={lightFlags} />
-        <GroundTruth />
-        {lightFlags.contactShadows && <ContactShadowGround />}
+        {lightFlags.glass ? <GlassSphere /> : <OpaqueSphere />}
+        {lightFlags.reflectorFloor ? <ReflectorFloor /> : <PlainGround />}
+        {lightFlags.contactShadows && !lightFlags.reflectorFloor && (
+          <ContactShadowGround />
+        )}
       </Suspense>
       <PostFX enabled={lightFlags.n8ao} toneMap={toneMap} />
     </Canvas>
