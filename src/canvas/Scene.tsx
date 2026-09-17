@@ -30,7 +30,10 @@ function ToneMappingApplier({
 }) {
   const { gl } = useThree()
   useEffect(() => {
-    gl.toneMapping = TONE_MAP_PRESETS[toneMap]
+    // EffectComposer needs NoToneMapping; do not apply the UI preset while active.
+    gl.toneMapping = composerActive
+      ? TONE_MAP_PRESETS.none
+      : TONE_MAP_PRESETS[toneMap]
     gl.toneMappingExposure = exposure
     gl.outputColorSpace = OUTPUT_COLOR_SPACE
   }, [gl, toneMap, exposure, composerActive])
