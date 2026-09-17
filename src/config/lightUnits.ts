@@ -28,6 +28,9 @@ export type LightFlags = {
   area: boolean
   contactShadows: boolean
   n8ao: boolean
+  bloom: boolean
+  dof: boolean
+  smaa: boolean
   reflectorFloor: boolean
   glass: boolean
 }
@@ -40,6 +43,13 @@ export const DEFAULT_LIGHT_FLAGS: LightFlags = {
   area: true,
   contactShadows: true,
   n8ao: true,
+  bloom: true,
+  dof: false,
+  smaa: true,
   reflectorFloor: true,
   glass: true,
+}
+
+export function isComposerActive(flags: LightFlags): boolean {
+  return flags.n8ao || flags.bloom || flags.dof || flags.smaa
 }
