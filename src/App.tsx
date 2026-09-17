@@ -75,6 +75,7 @@ export default function App() {
         lightFlags={lightFlags}
         subject={subject}
         navMode={navMode}
+        onNavModeChange={setNavMode}
         heroPathtrace={heroPathtrace}
         onPathSamplesChange={handleSamplesChange}
         onPathResetReady={handleResetReady}
