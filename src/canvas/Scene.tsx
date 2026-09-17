@@ -12,6 +12,7 @@ import {
   isComposerActive,
   type LightFlags,
 } from '../config/lightUnits'
+import { DEFAULT_NAV_MODE, type NavMode } from '../config/nav'
 import { DEFAULT_SUBJECT, type SubjectId } from '../config/subject'
 import { PathtraceShell } from '../render/PathtraceShell'
 import { ContactShadowGround } from './ContactShadowGround'
@@ -51,6 +52,8 @@ type SceneProps = {
   exposure?: number
   lightFlags?: LightFlags
   subject?: SubjectId
+  navMode?: NavMode
+  onNavModeChange?: (m: NavMode) => void
   heroPathtrace?: boolean
   onPathSamplesChange?: (samples: number) => void
   onPathResetReady?: (reset: () => void) => void
@@ -61,10 +64,14 @@ export function Scene({
   exposure = DEFAULT_EXPOSURE,
   lightFlags = DEFAULT_LIGHT_FLAGS,
   subject = DEFAULT_SUBJECT,
+  navMode = DEFAULT_NAV_MODE,
+  onNavModeChange: _onNavModeChange,
   heroPathtrace = false,
   onPathSamplesChange,
   onPathResetReady,
 }: SceneProps) {
+  void navMode
+  void _onNavModeChange
   // Transmission / MeshReflector / ContactShadows are unstable under the pathtracer —
   // force mid-gray for glass + plain ground; helmet stays available under Path C.
   const showHelmet = subject === 'helmet'

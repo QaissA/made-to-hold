@@ -6,8 +6,10 @@ import {
   type ToneMapPreset,
 } from './config/color'
 import { DEFAULT_LIGHT_FLAGS, type LightFlags } from './config/lightUnits'
+import { DEFAULT_NAV_MODE, type NavMode } from './config/nav'
 import { DEFAULT_SUBJECT, type SubjectId } from './config/subject'
 import { LightControls } from './ui/LightControls'
+import { NavControls } from './ui/NavControls'
 import { PathtraceControls } from './ui/PathtraceControls'
 import { SubjectControls } from './ui/SubjectControls'
 import { ToneMapControls } from './ui/ToneMapControls'
@@ -17,6 +19,7 @@ export default function App() {
   const [exposure, setExposure] = useState(DEFAULT_EXPOSURE)
   const [lightFlags, setLightFlags] = useState<LightFlags>(DEFAULT_LIGHT_FLAGS)
   const [subject, setSubject] = useState<SubjectId>(DEFAULT_SUBJECT)
+  const [navMode, setNavMode] = useState<NavMode>(DEFAULT_NAV_MODE)
   const [heroPathtrace, setHeroPathtrace] = useState(false)
   const [pathSamples, setPathSamples] = useState<number | undefined>()
   const pathResetRef = useRef<(() => void) | null>(null)
@@ -31,7 +34,9 @@ export default function App() {
 
   const handleEnabledChange = useCallback((enabled: boolean) => {
     setHeroPathtrace(enabled)
-    if (!enabled) {
+    if (enabled) {
+      setNavMode('orbit')
+    } else {
       setPathSamples(undefined)
       pathResetRef.current = null
     }
@@ -46,6 +51,11 @@ export default function App() {
         onExposureChange={setExposure}
       />
       <LightControls flags={lightFlags} onChange={setLightFlags} />
+      <NavControls
+        mode={navMode}
+        onModeChange={setNavMode}
+        disabled={heroPathtrace}
+      />
       <PathtraceControls
         enabled={heroPathtrace}
         onEnabledChange={handleEnabledChange}
@@ -64,6 +74,7 @@ export default function App() {
         exposure={exposure}
         lightFlags={lightFlags}
         subject={subject}
+        navMode={navMode}
         heroPathtrace={heroPathtrace}
         onPathSamplesChange={handleSamplesChange}
         onPathResetReady={handleResetReady}
