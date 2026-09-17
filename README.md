@@ -39,6 +39,12 @@ npm run dev
 - Sample HDRI: `public/hdri/studio.hdr` (see ATTRIBUTION.md)
 - Checklist: `docs/playbooks/color-foundation.md`
 
+## Controls / Nav
+
+- Default: **Orbit** (drag to orbit, scroll to zoom)
+- Toggle **Walk** in the panel or press **F** (pointer-lock look + WASD)
+- **Hero pathtrace** freezes navigation until turned off
+
 ## Phase 2 — Lighting & shadows
 
 - Studio rig: key (shadowed) + fill + rim + RectAreaLight with Spot shadow proxy
