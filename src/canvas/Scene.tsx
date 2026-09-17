@@ -61,9 +61,10 @@ export function Scene({
   onPathSamplesChange,
   onPathResetReady,
 }: SceneProps) {
-  // Transmission / MeshReflector are unstable under the pathtracer — force opaque + plain ground.
+  // Transmission / MeshReflector / ContactShadows are unstable under the pathtracer — force opaque + plain ground.
   const glass = heroPathtrace ? false : lightFlags.glass
   const reflectorFloor = heroPathtrace ? false : lightFlags.reflectorFloor
+  const contactShadows = heroPathtrace ? false : lightFlags.contactShadows
   const composerActive = !heroPathtrace && isComposerActive(lightFlags)
 
   return (
@@ -95,7 +96,7 @@ export function Scene({
           <Lighting flags={lightFlags} />
           {glass ? <GlassSphere /> : <OpaqueSphere />}
           {reflectorFloor ? <ReflectorFloor /> : <PlainGround />}
-          {lightFlags.contactShadows && !reflectorFloor && (
+          {contactShadows && !reflectorFloor && (
             <ContactShadowGround />
           )}
         </PathtraceShell>
