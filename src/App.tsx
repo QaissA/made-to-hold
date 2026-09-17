@@ -6,14 +6,17 @@ import {
   type ToneMapPreset,
 } from './config/color'
 import { DEFAULT_LIGHT_FLAGS, type LightFlags } from './config/lightUnits'
+import { DEFAULT_SUBJECT, type SubjectId } from './config/subject'
 import { LightControls } from './ui/LightControls'
 import { PathtraceControls } from './ui/PathtraceControls'
+import { SubjectControls } from './ui/SubjectControls'
 import { ToneMapControls } from './ui/ToneMapControls'
 
 export default function App() {
   const [toneMap, setToneMap] = useState<ToneMapPreset>(DEFAULT_TONE_MAP)
   const [exposure, setExposure] = useState(DEFAULT_EXPOSURE)
   const [lightFlags, setLightFlags] = useState<LightFlags>(DEFAULT_LIGHT_FLAGS)
+  const [subject, setSubject] = useState<SubjectId>(DEFAULT_SUBJECT)
   const [heroPathtrace, setHeroPathtrace] = useState(false)
   const [pathSamples, setPathSamples] = useState<number | undefined>()
   const pathResetRef = useRef<(() => void) | null>(null)
@@ -55,10 +58,12 @@ export default function App() {
             : undefined
         }
       />
+      <SubjectControls subject={subject} onSubjectChange={setSubject} />
       <Scene
         toneMap={toneMap}
         exposure={exposure}
         lightFlags={lightFlags}
+        subject={subject}
         heroPathtrace={heroPathtrace}
         onPathSamplesChange={handleSamplesChange}
         onPathResetReady={handleResetReady}

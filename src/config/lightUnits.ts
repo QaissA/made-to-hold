@@ -32,7 +32,6 @@ export type LightFlags = {
   dof: boolean
   smaa: boolean
   reflectorFloor: boolean
-  glass: boolean
 }
 
 export const DEFAULT_LIGHT_FLAGS: LightFlags = {
@@ -47,7 +46,6 @@ export const DEFAULT_LIGHT_FLAGS: LightFlags = {
   dof: false,
   smaa: true,
   reflectorFloor: true,
-  glass: true,
 }
 
 export function isComposerActive(flags: LightFlags): boolean {

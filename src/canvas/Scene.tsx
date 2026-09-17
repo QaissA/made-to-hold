@@ -12,8 +12,10 @@ import {
   isComposerActive,
   type LightFlags,
 } from '../config/lightUnits'
+import { DEFAULT_SUBJECT, type SubjectId } from '../config/subject'
 import { PathtraceShell } from '../render/PathtraceShell'
 import { ContactShadowGround } from './ContactShadowGround'
+import { DamagedHelmet } from './DamagedHelmet'
 import { GlassSphere } from './GlassSphere'
 import { OpaqueSphere, PlainGround } from './GroundTruth'
 import { Lighting } from './Lighting'
@@ -48,6 +50,7 @@ type SceneProps = {
   toneMap?: ToneMapPreset
   exposure?: number
   lightFlags?: LightFlags
+  subject?: SubjectId
   heroPathtrace?: boolean
   onPathSamplesChange?: (samples: number) => void
   onPathResetReady?: (reset: () => void) => void
@@ -57,12 +60,17 @@ export function Scene({
   toneMap = DEFAULT_TONE_MAP,
   exposure = DEFAULT_EXPOSURE,
   lightFlags = DEFAULT_LIGHT_FLAGS,
+  subject = DEFAULT_SUBJECT,
   heroPathtrace = false,
   onPathSamplesChange,
   onPathResetReady,
 }: SceneProps) {
-  // Transmission / MeshReflector / ContactShadows are unstable under the pathtracer — force opaque + plain ground.
-  const glass = heroPathtrace ? false : lightFlags.glass
+  // Transmission / MeshReflector / ContactShadows are unstable under the pathtracer —
+  // force mid-gray for glass + plain ground; helmet stays available under Path C.
+  const showHelmet = subject === 'helmet'
+  const showGlass = subject === 'glass' && !heroPathtrace
+  const showMidgray =
+    subject === 'midgray' || (subject === 'glass' && heroPathtrace)
   const reflectorFloor = heroPathtrace ? false : lightFlags.reflectorFloor
   const contactShadows = heroPathtrace ? false : lightFlags.contactShadows
   const composerActive = !heroPathtrace && isComposerActive(lightFlags)
@@ -94,7 +102,9 @@ export function Scene({
           onResetReady={onPathResetReady}
         >
           <Lighting flags={lightFlags} />
-          {glass ? <GlassSphere /> : <OpaqueSphere />}
+          {showHelmet && <DamagedHelmet />}
+          {showGlass && <GlassSphere />}
+          {showMidgray && <OpaqueSphere />}
           {reflectorFloor ? <ReflectorFloor /> : <PlainGround />}
           {contactShadows && !reflectorFloor && (
             <ContactShadowGround />
