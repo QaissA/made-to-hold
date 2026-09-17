@@ -28,6 +28,8 @@ export type LightFlags = {
   area: boolean
   contactShadows: boolean
   n8ao: boolean
+  reflectorFloor: boolean
+  glass: boolean
 }
 
 export const DEFAULT_LIGHT_FLAGS: LightFlags = {
@@ -38,4 +40,6 @@ export const DEFAULT_LIGHT_FLAGS: LightFlags = {
   area: true,
   contactShadows: true,
   n8ao: true,
+  reflectorFloor: true,
+  glass: true,
 }
