@@ -61,6 +61,15 @@ npm run dev
 - SSR deferred; production glass will prefer Physical/glTF later
 - Playbook: `docs/playbooks/post-aa.md` (reflections/transmission)
 
+## Phase 5 — Post & AA
+
+- Toggleable **Bloom**, **DOF**, **SMAA** (+ existing **N8AO**) in the light panel
+- Pass order: N8AO → Bloom → DOF → SMAA → ToneMapping (AgX/None/Neutral)
+- Composer mounts only when any post pass is on; all off restores AgX on `gl`
+- Defaults: bloom + SMAA + N8AO on; DOF off
+- No TRAA / realism-effects in this phase
+- Playbook: `docs/playbooks/post-aa.md`
+
 ## Status
 
-Phase 1–4 scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows / N8AO, and A/B reflector floor + glass transmission against the mid-gray reference and sample HDRI.
+Phase 1–5 scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows / N8AO / Bloom / DOF / SMAA, and A/B reflector floor + glass transmission against the mid-gray reference and sample HDRI.
