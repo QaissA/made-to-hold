@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useLenis } from './scroll/useLenis'
 
 export function LandingPage() {
+  useLenis()
+
   return (
     <div
       style={{
