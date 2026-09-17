@@ -56,7 +56,7 @@ npm run dev
 ## Phase 4 — Reflections & transmission
 
 - Reflective floor: drei `MeshReflectorMaterial` (toggle **Reflector floor**)
-- Glass: drei `MeshTransmissionMaterial` (toggle **Glass**; replaces opaque mid-gray sphere)
+- Glass: drei `MeshTransmissionMaterial` via subject picker (**Glass**)
 - ContactShadows disabled while reflector is on
 - SSR deferred; production glass will prefer Physical/glTF later
 - Playbook: `docs/playbooks/post-aa.md` (reflections/transmission)
@@ -76,8 +76,19 @@ npm run dev
 - Interactive default remains Path A (raster + post)
 - PostFX disabled while pathtracing; `gl` tone mapping set to None so the pathtracer owns output
 - Transmission / reflector fall back to opaque sphere + plain ground for tracer stability
+- Helmet subject stays available under pathtrace; Glass falls back to mid-gray
 - Samples counter + **Reset** while pathtracing; playbook: `docs/playbooks/path-c-pathtracer.md`
+
+## DamagedHelmet A/B (subject picker)
+
+- Default subject: **Helmet** (`DamagedHelmet.glb` from Khronos glTF-Sample-Models)
+- Model path: `public/models/DamagedHelmet.glb` — see `public/models/ATTRIBUTION.md`
+- Subject picker (bottom-right): **Mid-gray** | **Glass** | **Helmet**
+- Studio HDRI unchanged: `public/hdri/studio.hdr` (same file for Blender A/B)
+- Use **AgX** + matching exposure in Blender 4.x for view-transform parity
+- Drop Eevee PNG screenshots into `public/references/` (see that folder’s README)
+- Checklist: [`docs/reference/parity-checklist.md`](docs/reference/parity-checklist.md)
 
 ## Status
 
-Phase 1–6 scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows / N8AO / Bloom / DOF / SMAA, A/B reflector floor + glass transmission, and opt into **Hero pathtrace** for progressive stills against the mid-gray reference and sample HDRI.
+Phase 1–6 + DamagedHelmet A/B scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows / N8AO / Bloom / DOF / SMAA, A/B reflector floor, cycle Mid-gray / Glass / Helmet, and opt into **Hero pathtrace** for progressive stills against the sample HDRI.
