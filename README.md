@@ -70,6 +70,14 @@ npm run dev
 - No TRAA / realism-effects in this phase
 - Playbook: `docs/playbooks/post-aa.md`
 
+## Phase 6 — Hero pathtracer (Path C)
+
+- Toggle **Hero pathtrace** (default off) — progressive GPU path tracing via `@react-three/gpu-pathtracer`
+- Interactive default remains Path A (raster + post)
+- PostFX disabled while pathtracing; `gl` tone mapping set to None so the pathtracer owns output
+- Transmission / reflector fall back to opaque sphere + plain ground for tracer stability
+- Samples counter + **Reset** while pathtracing; playbook: `docs/playbooks/path-c-pathtracer.md`
+
 ## Status
 
-Phase 1–5 scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows / N8AO / Bloom / DOF / SMAA, and A/B reflector floor + glass transmission against the mid-gray reference and sample HDRI.
+Phase 1–6 scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows / N8AO / Bloom / DOF / SMAA, A/B reflector floor + glass transmission, and opt into **Hero pathtrace** for progressive stills against the mid-gray reference and sample HDRI.
