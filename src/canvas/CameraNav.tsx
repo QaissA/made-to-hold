@@ -93,7 +93,6 @@ export function CameraNav({ mode, onModeChange, frozen }: Props) {
     quaternion: THREE.Quaternion
     target: THREE.Vector3
   } | null>(null)
-  const restoredTarget = useRef<THREE.Vector3 | null>(null)
   const prevMode = useRef(mode)
 
   // F toggle (skip when typing or frozen)
@@ -132,23 +131,20 @@ export function CameraNav({ mode, onModeChange, frozen }: Props) {
     } else if (saved.current) {
       camera.position.copy(saved.current.position)
       camera.quaternion.copy(saved.current.quaternion)
-      restoredTarget.current = saved.current.target.clone()
       lastOrbitTarget.current.copy(saved.current.target)
       saved.current = null
     }
     prevMode.current = mode
   }, [mode, camera])
 
-  // Apply restored orbit target after OrbitControls remounts
+  // Re-apply last orbit target whenever OrbitControls remounts
+  // (leave walk, or pathtrace freeze → unfreeze while already in orbit).
   useEffect(() => {
-    if (mode !== 'orbit' || frozen || !restoredTarget.current) return
-    const target = restoredTarget.current
-    restoredTarget.current = null
+    if (mode !== 'orbit' || frozen) return
     const apply = () => {
       const controls = orbitControlsRef.current
       if (!controls) return
-      controls.target.copy(target)
-      lastOrbitTarget.current.copy(target)
+      controls.target.copy(lastOrbitTarget.current)
       controls.update()
     }
     apply()
