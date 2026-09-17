@@ -12,6 +12,7 @@ import {
   isComposerActive,
   type LightFlags,
 } from '../config/lightUnits'
+import { PathtraceShell } from '../render/PathtraceShell'
 import { ContactShadowGround } from './ContactShadowGround'
 import { GlassSphere } from './GlassSphere'
 import { OpaqueSphere, PlainGround } from './GroundTruth'
@@ -23,20 +24,23 @@ function ToneMappingApplier({
   toneMap,
   exposure,
   composerActive,
+  heroPathtrace,
 }: {
   toneMap: ToneMapPreset
   exposure: number
   composerActive: boolean
+  heroPathtrace: boolean
 }) {
   const { gl } = useThree()
   useEffect(() => {
-    // EffectComposer needs NoToneMapping; do not apply the UI preset while active.
-    gl.toneMapping = composerActive
-      ? TONE_MAP_PRESETS.none
-      : TONE_MAP_PRESETS[toneMap]
+    // EffectComposer and pathtracer own output — do not apply UI preset then.
+    gl.toneMapping =
+      composerActive || heroPathtrace
+        ? TONE_MAP_PRESETS.none
+        : TONE_MAP_PRESETS[toneMap]
     gl.toneMappingExposure = exposure
     gl.outputColorSpace = OUTPUT_COLOR_SPACE
-  }, [gl, toneMap, exposure, composerActive])
+  }, [gl, toneMap, exposure, composerActive, heroPathtrace])
   return null
 }
 
@@ -44,13 +48,24 @@ type SceneProps = {
   toneMap?: ToneMapPreset
   exposure?: number
   lightFlags?: LightFlags
+  heroPathtrace?: boolean
+  onPathSamplesChange?: (samples: number) => void
+  onPathResetReady?: (reset: () => void) => void
 }
 
 export function Scene({
   toneMap = DEFAULT_TONE_MAP,
   exposure = DEFAULT_EXPOSURE,
   lightFlags = DEFAULT_LIGHT_FLAGS,
+  heroPathtrace = false,
+  onPathSamplesChange,
+  onPathResetReady,
 }: SceneProps) {
+  // Transmission / MeshReflector are unstable under the pathtracer — force opaque + plain ground.
+  const glass = heroPathtrace ? false : lightFlags.glass
+  const reflectorFloor = heroPathtrace ? false : lightFlags.reflectorFloor
+  const composerActive = !heroPathtrace && isComposerActive(lightFlags)
+
   return (
     <Canvas
       shadows="soft"
@@ -67,18 +82,25 @@ export function Scene({
       <ToneMappingApplier
         toneMap={toneMap}
         exposure={exposure}
-        composerActive={isComposerActive(lightFlags)}
+        composerActive={composerActive}
+        heroPathtrace={heroPathtrace}
       />
       <color attach="background" args={['#111']} />
       <Suspense fallback={null}>
-        <Lighting flags={lightFlags} />
-        {lightFlags.glass ? <GlassSphere /> : <OpaqueSphere />}
-        {lightFlags.reflectorFloor ? <ReflectorFloor /> : <PlainGround />}
-        {lightFlags.contactShadows && !lightFlags.reflectorFloor && (
-          <ContactShadowGround />
-        )}
+        <PathtraceShell
+          enabled={heroPathtrace}
+          onSamplesChange={onPathSamplesChange}
+          onResetReady={onPathResetReady}
+        >
+          <Lighting flags={lightFlags} />
+          {glass ? <GlassSphere /> : <OpaqueSphere />}
+          {reflectorFloor ? <ReflectorFloor /> : <PlainGround />}
+          {lightFlags.contactShadows && !reflectorFloor && (
+            <ContactShadowGround />
+          )}
+        </PathtraceShell>
       </Suspense>
-      <PostFX flags={lightFlags} toneMap={toneMap} />
+      {!heroPathtrace && <PostFX flags={lightFlags} toneMap={toneMap} />}
     </Canvas>
   )
 }
