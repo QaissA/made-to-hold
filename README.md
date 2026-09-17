@@ -53,6 +53,14 @@ npm run dev
 - When N8AO is on, the composer applies the view transform (`ToneMapping`); when off, AgX stays on the renderer
 - Playbook: `docs/playbooks/gi-ao.md`
 
+## Phase 4 — Reflections & transmission
+
+- Reflective floor: drei `MeshReflectorMaterial` (toggle **Reflector floor**)
+- Glass: drei `MeshTransmissionMaterial` (toggle **Glass**; replaces opaque mid-gray sphere)
+- ContactShadows disabled while reflector is on
+- SSR deferred; production glass will prefer Physical/glTF later
+- Playbook: `docs/playbooks/post-aa.md` (reflections/transmission)
+
 ## Status
 
-Phase 1–3 scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows, and A/B N8AO against the mid-gray reference and sample HDRI.
+Phase 1–4 scaffolded — run `npm run dev` to compare AgX / None / Neutral, toggle studio lights / ContactShadows / N8AO, and A/B reflector floor + glass transmission against the mid-gray reference and sample HDRI.
