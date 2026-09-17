@@ -1,7 +1,35 @@
-html, body, #root {
-  margin: 0;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #0e0d0f;
+  --bg-plaster: #1a1720;
+  --majorelle: #3b33e0;
+  --majorelle-bright: #5b4bff;
+  --saffron: #e8a13a;
+  --terracotta: #c05a3e;
+  --zellij-green: #1f6e5c;
+  --bone: #ede6d8;
+  --muted: #8a8494;
+
+  --font-display: 'Clash Display', sans-serif;
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+html,
+body,
+#root {
   width: 100%;
   height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--bone);
+  font-family: var(--font-sans);
+}
+
+#root {
   overflow: hidden;
-  background: #000;
 }
