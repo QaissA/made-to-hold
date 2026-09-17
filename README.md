@@ -11,6 +11,13 @@ Optional:
 - **Path B** — WebGPU + TSL (migration; not default)
 - **Path C** — `three-gpu-pathtracer` hero stills
 
+## Routes
+
+| Path | What |
+|---|---|
+| `/` | **Made to Hold** landing — overture + hero trio (see [landing playbook](docs/playbooks/landing-page.md)) |
+| `/lab` | Look-dev sandbox (Path A studio: AgX, lights, post, pathtracer toggles) |
+
 ## Docs
 
 | Doc | Use when |
