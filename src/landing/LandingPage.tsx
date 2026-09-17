@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Hero } from './Hero'
 import { Overture } from './Overture'
@@ -14,9 +14,21 @@ const GRAIN_SVG = encodeURIComponent(
 )
 
 export function LandingPage() {
-  useLenis()
+  const lenis = useLenis()
+  const scrollProgressRef = useRef(0)
   const [progress, setProgress] = useState(0)
   const [showOverture, setShowOverture] = useState(true)
+
+  useEffect(() => {
+    if (!lenis) return
+    const onScroll = (instance: { progress: number }) => {
+      scrollProgressRef.current = instance.progress
+    }
+    lenis.on('scroll', onScroll)
+    return () => {
+      lenis.off('scroll', onScroll)
+    }
+  }, [lenis])
 
   return (
     <div
@@ -38,7 +50,10 @@ export function LandingPage() {
           overflow: 'hidden',
         }}
       >
-        <Hero onProgress={setProgress} />
+        <Hero
+          onProgress={setProgress}
+          scrollProgressRef={scrollProgressRef}
+        />
 
         {showOverture && (
           <Overture

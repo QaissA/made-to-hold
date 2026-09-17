@@ -1,6 +1,7 @@
 import { OrbitControls, useProgress } from '@react-three/drei'
-import { Canvas, useThree } from '@react-three/fiber'
-import { Suspense, useEffect } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { damp } from 'maath/easing'
+import { Suspense, useEffect, type RefObject } from 'react'
 import { ContactShadowGround } from '../canvas/ContactShadowGround'
 import { Lighting } from '../canvas/Lighting'
 import { PostFX } from '../canvas/PostFX'
@@ -17,6 +18,10 @@ import {
 } from '../config/lightUnits'
 import { PALETTE } from '../config/palette'
 import { HeroTrio } from './scenes/HeroTrio'
+
+const CAMERA_Y0 = 1.4
+const SCROLL_NUDGE_Y = 0.35
+const NUDGE_SMOOTH_TIME = 0.4
 
 /** Landing studio lights — no reflector floor; area off for a lighter hero. */
 export const HERO_LIGHT_FLAGS: LightFlags = {
@@ -60,18 +65,37 @@ function ProgressBridge({ onProgress }: { onProgress?: (p: number) => void }) {
   return null
 }
 
-export type HeroProps = {
-  onProgress?: (p: number) => void
+/** Stub: damp camera Y up to ~0.35 as Lenis scroll progress 0→1. */
+function CameraNudge({
+  scrollProgressRef,
+}: {
+  scrollProgressRef?: RefObject<number>
+}) {
+  const { camera } = useThree()
+
+  useFrame((_, delta) => {
+    const p = scrollProgressRef?.current ?? 0
+    const targetY = CAMERA_Y0 + Math.min(1, Math.max(0, p)) * SCROLL_NUDGE_Y
+    damp(camera.position, 'y', targetY, NUDGE_SMOOTH_TIME, delta)
+  })
+
+  return null
 }
 
-export function Hero({ onProgress }: HeroProps) {
+export type HeroProps = {
+  onProgress?: (p: number) => void
+  /** Lenis scroll progress 0–1 (mutated by LandingPage). */
+  scrollProgressRef?: RefObject<number>
+}
+
+export function Hero({ onProgress, scrollProgressRef }: HeroProps) {
   const composerActive = isComposerActive(HERO_LIGHT_FLAGS)
 
   return (
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera={{ position: [2.2, 1.4, 3.2], fov: 40 }}
+      camera={{ position: [2.2, CAMERA_Y0, 3.2], fov: 40 }}
       gl={{
         antialias: true,
         toneMapping: TONE_MAP_PRESETS[DEFAULT_TONE_MAP],
@@ -92,6 +116,7 @@ export function Hero({ onProgress }: HeroProps) {
       </Suspense>
       <PostFX flags={HERO_LIGHT_FLAGS} toneMap={DEFAULT_TONE_MAP} />
       <OrbitControls enableDamping makeDefault />
+      <CameraNudge scrollProgressRef={scrollProgressRef} />
       <ProgressBridge onProgress={onProgress} />
     </Canvas>
   )
