@@ -1,12 +1,12 @@
+import type { StrandId } from '../filament/curves'
+
 /**
  * The shared stage state.
  *
  * One mutable object read every frame by both the DOM HUD and the R3F scene.
- * Deliberately outside React: scroll drives ~60 writes/second and nothing here
- * should ever trigger a re-render.
+ * Deliberately outside React: scroll writes to it ~60 times a second and none
+ * of that should ever cost a render.
  */
-
-export type PlateId = 'route' | 'face' | 'zellij'
 
 export type ActId =
   | 'overture'
@@ -21,26 +21,27 @@ export type ActId =
 export type Stage = {
   /** Whole-document scroll progress, 0-1. */
   scroll: number
-  /** Smoothed absolute scroll speed, 0-1ish. Drives nozzle heat. */
+  /** Smoothed absolute scroll speed, 0-1ish. Drives extrusion heat. */
   heat: number
-  /** Pointer in NDC-ish space, -1..1. */
+  /** Pointer in NDC space, -1..1. */
   pointerX: number
   pointerY: number
   /** Act currently crossing viewport centre. */
   actId: ActId
   /** Progress through that act, 0-1. */
   actLocal: number
-  /** Which relief the bed should be printing. */
-  plate: PlateId
-  /** Simulated layer counter for the HUD. */
-  layer: number
+  /** Which form the strand should be holding. */
+  strand: StrandId
+  /** Metres laid so far. Monotonic — the spool only ever empties. */
+  metres: number
   /** User asked for calm. */
   reduced: boolean
-  /** Loader finished; the stage may start printing. */
+  /** Loader finished; extrusion may begin. */
   started: boolean
 }
 
-export const LAYER_TOTAL = 1284
+/** Filament on the reel. The whole page consumes most of it. */
+export const SPOOL_METRES = 400
 
 export const stage: Stage = {
   scroll: 0,
@@ -49,22 +50,27 @@ export const stage: Stage = {
   pointerY: 0,
   actId: 'hero',
   actLocal: 0,
-  plate: 'route',
-  layer: 0,
+  strand: 'vase',
+  metres: 0,
   reduced: false,
   started: false,
 }
 
-/** Act -> anchor word shown in the rail, and the plate the bed holds. */
-export const ACTS: Record<ActId, { word: string; plate: PlateId }> = {
-  overture: { word: 'Form', plate: 'route' },
-  hero: { word: 'Form', plate: 'route' },
-  manifesto: { word: 'Matter', plate: 'route' },
-  effort: { word: 'Effort', plate: 'route' },
-  light: { word: 'Light', plate: 'face' },
-  heritage: { word: 'Heritage', plate: 'zellij' },
-  craft: { word: 'Craft', plate: 'zellij' },
-  yours: { word: 'Yours', plate: 'zellij' },
+/**
+ * Act -> anchor word + the form the strand takes.
+ *
+ * The run closes on `vase`: the page ends holding the object it opened by
+ * making.
+ */
+export const ACTS: Record<ActId, { word: string; strand: StrandId }> = {
+  overture: { word: 'Form', strand: 'vase' },
+  hero: { word: 'Form', strand: 'vase' },
+  manifesto: { word: 'Matter', strand: 'vase' },
+  effort: { word: 'Effort', strand: 'route' },
+  light: { word: 'Light', strand: 'portrait' },
+  heritage: { word: 'Heritage', strand: 'knot' },
+  craft: { word: 'Craft', strand: 'spool' },
+  yours: { word: 'Yours', strand: 'vase' },
 }
 
 export function clamp01(v: number): number {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { LAYER_TOTAL } from './scroll/stage'
+import { SPOOL_METRES } from './scroll/stage'
 
 const MIN_MS = 1500
 const READY_HOLD_MS = 620
@@ -16,9 +16,9 @@ export type OvertureProps = {
 
 const LOG = [
   'heating nozzle',
-  'levelling bed',
+  'homing axes',
   'loading filament',
-  'slicing geometry',
+  'solving the path',
   'priming line',
 ]
 
@@ -73,7 +73,7 @@ export function Overture({ progress, onDone }: OvertureProps) {
   if (phase === 'gone') return null
 
   const pct = Math.round(shown * 100)
-  const layer = Math.round(shown * LAYER_TOTAL)
+  const metres = (shown * SPOOL_METRES * 0.42).toFixed(1)
   const cut = (1 - shown) * 100
   const isReady = phase !== 'printing'
 
@@ -111,8 +111,8 @@ export function Overture({ progress, onDone }: OvertureProps) {
           </span>
           <span className="overture__count">
             {isReady
-              ? `${LAYER_TOTAL} / ${LAYER_TOTAL}`
-              : `${String(layer).padStart(4, '0')} / ${LAYER_TOTAL}`}
+              ? `${(SPOOL_METRES * 0.42).toFixed(1)} m loaded`
+              : `${metres} m`}
           </span>
         </div>
 

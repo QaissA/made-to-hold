@@ -3,11 +3,12 @@ import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { PALETTE } from '../../config/palette'
 import { stage, type ActId } from '../scroll/stage'
+import { extruder } from './strandState'
 
 type Key = {
   pos: [number, number, number]
   target: [number, number, number]
-  /** Lateral dolly. Positive pushes the object left on screen. */
+  /** Lateral dolly. Negative pushes the object right on screen. */
   lateral: number
 }
 
@@ -21,24 +22,23 @@ const ORDER: ActId[] = [
   'yours',
 ]
 
-/** One camera position per act — the film's shot list. */
+/**
+ * The shot list. Each form is framed for what it actually is: the vase in
+ * three-quarter, the route from low and along its length, the portrait spiral
+ * dead-on (it only resolves face-first), the knot from above.
+ */
 const KEYS: Record<ActId, Key> = {
-  overture: { pos: [2.5, 2.3, 3.5], target: [0, 0.25, 0], lateral: 0 },
-  // Three-quarter establishing shot, object right of the headline.
-  hero: { pos: [2.5, 2.3, 3.5], target: [0, 0.25, 0], lateral: -0.85 },
-  // Lift away for the editorial statement.
-  manifesto: { pos: [1.1, 4.1, 3.2], target: [0, 0.15, 0], lateral: 0.2 },
-  // Drop low and rake across the terrain so the route reads as landscape.
-  effort: { pos: [2.3, 1.3, 2.75], target: [0, 0.3, 0], lateral: -0.95 },
-  // High and near-plan: a lithophane lying on the bed only resolves into a
-  // face when you look straight down it, with the backlight raking sideways.
-  light: { pos: [0.25, 4.15, 2.3], target: [0, 0.3, 0], lateral: 1.0 },
-  // Plan view — zellij is a pattern before it is an object.
-  heritage: { pos: [0.3, 4.6, 1.35], target: [0, 0.18, 0], lateral: 0 },
-  // Step back into the workshop.
-  craft: { pos: [3.0, 2.15, 3.0], target: [0, 0.2, 0], lateral: -0.7 },
-  // Final wide.
-  yours: { pos: [1.4, 1.75, 4.6], target: [0, 0.32, 0], lateral: -0.3 },
+  overture: { pos: [2.1, 1.05, 4.2], target: [0, 0.22, 0], lateral: 0 },
+  hero: { pos: [2.1, 1.05, 4.2], target: [0, 0.22, 0], lateral: -1.3 },
+  manifesto: { pos: [0.4, 3.0, 4.1], target: [0, -0.1, 0], lateral: 0.35 },
+  // Down at the horizon and along the run, so elevation reads as elevation.
+  effort: { pos: [1.15, 0.62, 3.5], target: [0, 0.02, 0], lateral: -1.0 },
+  // The spiral portrait is a flat coil — anything but head-on is noise.
+  light: { pos: [0, 0.15, 4.35], target: [0, 0, 0], lateral: 1.05 },
+  // Pattern before object.
+  heritage: { pos: [0.25, 3.6, 2.6], target: [0, 0, 0], lateral: 0 },
+  craft: { pos: [3.2, 1.5, 3.4], target: [0, 0, 0], lateral: -0.75 },
+  yours: { pos: [1.5, 1.0, 5.4], target: [0, 0.05, 0], lateral: -0.35 },
 }
 
 function easeInOut(t: number) {
@@ -49,19 +49,19 @@ function easeInOut(t: number) {
 export function StageRig() {
   const { camera } = useThree()
 
-  const pos = useMemo(() => new THREE.Vector3(2.5, 2.3, 3.5), [])
-  const target = useMemo(() => new THREE.Vector3(0, 0.25, 0), [])
+  const pos = useMemo(() => new THREE.Vector3(2.1, 1.3, 4.2), [])
+  const target = useMemo(() => new THREE.Vector3(), [])
   const right = useMemo(() => new THREE.Vector3(), [])
   const up = useMemo(() => new THREE.Vector3(0, 1, 0), [])
   const tmp = useMemo(() => new THREE.Vector3(), [])
 
-  const backlight = useRef<THREE.SpotLight>(null)
-  const heritage = useRef<THREE.PointLight>(null)
-  const litRef = useRef({ back: 0, cold: 0 })
+  const warm = useRef<THREE.PointLight>(null)
+  const cold = useRef<THREE.PointLight>(null)
+  const lit = useRef({ warm: 0, cold: 0 })
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05)
-    const smooth = 1 - Math.exp(-dt * (stage.reduced ? 12 : 2.6))
+    const smooth = 1 - Math.exp(-dt * (stage.reduced ? 12 : 2.4))
 
     const actId = stage.actId === 'overture' ? 'hero' : stage.actId
     const i = Math.max(0, ORDER.indexOf(actId))
@@ -78,14 +78,18 @@ export function StageRig() {
     const lateral = a.lateral + (b.lateral - a.lateral) * k
 
     // Lateral dolly: shift camera and target together along the view's right
-    // axis, which slides the object across the frame without re-aiming it.
-    // Dollying right pushes the object left, hence the negative keys.
+    // axis, sliding the object across the frame without re-aiming it.
     tmp.set(tx - px, ty - py, tz - pz)
     right.copy(tmp).cross(up).normalize()
 
-    const breathe = stage.reduced ? 0 : Math.sin(state.clock.elapsedTime * 0.23) * 0.045
-    const parX = stage.reduced ? 0 : stage.pointerX * 0.32
-    const parY = stage.reduced ? 0 : stage.pointerY * 0.16
+    const breathe = stage.reduced
+      ? 0
+      : Math.sin(state.clock.elapsedTime * 0.21) * 0.05
+    // The camera stops drifting while you are holding the object — you are in
+    // charge of the view then, not the film.
+    const par = extruder.held || stage.reduced ? 0 : 1
+    const parX = stage.pointerX * 0.3 * par
+    const parY = stage.pointerY * 0.18 * par
 
     pos.set(
       px + right.x * lateral + parX,
@@ -97,63 +101,56 @@ export function StageRig() {
     camera.position.lerp(pos, smooth)
     camera.lookAt(target)
 
-    // Act lighting: the lithophane needs raking warmth, zellij needs cold blue.
-    const backTarget = actId === 'light' ? 1 : 0
-    const coldTarget = actId === 'heritage' ? 1 : 0.12
-    litRef.current.back += (backTarget - litRef.current.back) * Math.min(1, dt * 2.2)
-    litRef.current.cold += (coldTarget - litRef.current.cold) * Math.min(1, dt * 2.2)
+    // The portrait needs warm raking light; the knot needs cold structure.
+    const warmTarget = actId === 'light' ? 1 : 0.15
+    const coldTarget = actId === 'heritage' ? 1 : 0.2
+    lit.current.warm += (warmTarget - lit.current.warm) * Math.min(1, dt * 2.2)
+    lit.current.cold += (coldTarget - lit.current.cold) * Math.min(1, dt * 2.2)
 
-    if (backlight.current) {
-      backlight.current.intensity = 1.2 + litRef.current.back * 14
-    }
-    if (heritage.current) {
-      heritage.current.intensity = litRef.current.cold * 7
-    }
+    if (warm.current) warm.current.intensity = 1 + lit.current.warm * 9
+    if (cold.current) cold.current.intensity = 1 + lit.current.cold * 7
   })
 
   return (
     <>
-      <fogExp2 attach="fog" args={[PALETTE.ink, 0.13]} />
+      <fogExp2 attach="fog" args={[PALETTE.ink, 0.115]} />
 
-      {/* Key — cool workshop overhead, the only shadow caster */}
+      {/* Key — the only shadow caster, raking so the coil reads as coil */}
       <directionalLight
-        position={[-3.4, 5.2, 3.2]}
-        intensity={1.15}
+        position={[-3.6, 4.4, 3.0]}
+        intensity={1.05}
         color="#dfe4ff"
         castShadow
         shadow-mapSize={[2048, 2048]}
-        shadow-bias={-0.0002}
-        shadow-normalBias={0.02}
+        shadow-bias={-0.0003}
+        shadow-normalBias={0.015}
         shadow-camera-near={0.5}
-        shadow-camera-far={18}
-        shadow-camera-left={-4}
-        shadow-camera-right={4}
-        shadow-camera-top={4}
-        shadow-camera-bottom={-4}
+        shadow-camera-far={20}
+        shadow-camera-left={-3.5}
+        shadow-camera-right={3.5}
+        shadow-camera-top={3.5}
+        shadow-camera-bottom={-3.5}
       />
 
-      {/* Fill so the shadow side never goes dead */}
-      <hemisphereLight args={['#1d1a33', '#050408', 0.3]} />
+      <hemisphereLight args={['#201c38', '#050408', 0.35]} />
 
-      {/* Lithophane backlight — grazes the relief from behind and below */}
-      <spotLight
-        ref={backlight}
-        position={[0, 0.55, -2.6]}
-        angle={0.75}
-        penumbra={1}
+      {/* Warm fill from below-front: lights the underside of every winding */}
+      <pointLight
+        ref={warm}
+        position={[1.4, -0.9, 2.6]}
         color={PALETTE.amber}
-        intensity={2}
+        intensity={1}
         distance={9}
         decay={2}
       />
 
-      {/* Heritage cold accent */}
+      {/* Cold rim from behind: separates the strand from the void */}
       <pointLight
-        ref={heritage}
-        position={[2.2, 1.4, -1.8]}
+        ref={cold}
+        position={[-2.4, 1.6, -2.6]}
         color={PALETTE.majorelleBright}
-        intensity={2}
-        distance={8}
+        intensity={1}
+        distance={10}
         decay={2}
       />
     </>

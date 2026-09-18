@@ -17,18 +17,10 @@ import {
   TONE_MAP_PRESETS,
 } from '../config/color'
 import { PALETTE } from '../config/palette'
-import {
-  createFacePlate,
-  createRoutePlate,
-  createZellijPlate,
-  disposePlate,
-  type ReliefPlate,
-} from './relief/reliefMaps'
-import { Gantry } from './scenes/Gantry'
-import { PrintBed } from './scenes/PrintBed'
+import { buildStrandData } from './filament/strandData'
+import { Ground } from './scenes/Ground'
 import { StageRig } from './scenes/StageRig'
-import { ZellijFloor } from './scenes/ZellijFloor'
-import type { PlateId } from './scroll/stage'
+import { Strand } from './scenes/Strand'
 
 const PORTRAIT_URL = '/textures/lithophane-portrait.jpg'
 
@@ -52,61 +44,42 @@ function ProgressBridge({ onProgress }: { onProgress: (p: number) => void }) {
   return null
 }
 
-function usePlates(): Record<PlateId, ReliefPlate> {
+function Stage() {
   const portrait = useTexture(PORTRAIT_URL)
 
-  const plates = useMemo(() => {
-    const image = portrait.image as HTMLImageElement
-    return {
-      route: createRoutePlate(),
-      face: createFacePlate(image),
-      zellij: createZellijPlate(),
-    } satisfies Record<PlateId, ReliefPlate>
-  }, [portrait])
-
-  useEffect(
-    () => () => {
-      disposePlate(plates.route)
-      disposePlate(plates.face)
-      disposePlate(plates.zellij)
-    },
-    [plates],
+  const data = useMemo(
+    () => buildStrandData(portrait.image as HTMLImageElement),
+    [portrait],
   )
-
-  return plates
-}
-
-function Stage({ segments }: { segments: number }) {
-  const plates = usePlates()
+  useEffect(() => () => data.dispose(), [data])
 
   return (
     <>
-      <Environment files="/hdri/studio.hdr" environmentIntensity={0.26} />
+      <Environment files="/hdri/studio.hdr" environmentIntensity={0.3} />
       <StageRig />
-      <ZellijFloor />
-      <PrintBed plates={plates} segments={segments} />
-      <Gantry />
+      <Ground />
+      <Strand data={data} />
     </>
   )
 }
 
 /**
- * Pass order per the post/AA playbook: N8AO -> Bloom -> SMAA -> Vignette ->
- * ToneMapping(AgX). Bloom sits low on the threshold because the hot extrusion
- * line is the one thing on this page allowed to blow out.
+ * N8AO -> Bloom -> SMAA -> Vignette -> ToneMapping(AgX), per the post/AA
+ * playbook. Bloom threshold sits at 1.0 so only genuinely molten filament
+ * blooms; everything cooler stays a lit surface.
  */
 function StagePostFX() {
   return (
     <EffectComposer enableNormalPass={false} multisampling={0}>
-      <N8AO aoRadius={0.55} intensity={1.7} quality="medium" halfRes />
+      <N8AO aoRadius={0.4} intensity={1.4} quality="medium" halfRes />
       <Bloom
         luminanceThreshold={1.0}
-        luminanceSmoothing={0.22}
-        intensity={1.25}
+        luminanceSmoothing={0.24}
+        intensity={1.5}
         mipmapBlur
       />
       <SMAA />
-      <Vignette offset={0.28} darkness={0.72} eskil={false} />
+      <Vignette offset={0.26} darkness={0.74} eskil={false} />
       <ToneMapping mode={ToneMappingMode.AGX} />
     </EffectComposer>
   )
@@ -117,16 +90,11 @@ export type StageCanvasProps = {
 }
 
 export function StageCanvas({ onProgress }: StageCanvasProps) {
-  const segments = useMemo(() => {
-    if (typeof window === 'undefined') return 256
-    return window.innerWidth < 900 ? 128 : 256
-  }, [])
-
   return (
     <Canvas
       shadows
       dpr={[1, 1.75]}
-      camera={{ position: [2.5, 2.3, 3.5], fov: 38, near: 0.1, far: 60 }}
+      camera={{ position: [2.1, 1.3, 4.2], fov: 38, near: 0.1, far: 60 }}
       gl={{
         antialias: false,
         toneMapping: THREE.NoToneMapping,
@@ -134,17 +102,12 @@ export function StageCanvas({ onProgress }: StageCanvasProps) {
         powerPreference: 'high-performance',
       }}
       className="stage-canvas"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: 'none',
-      }}
+      style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}
     >
       <ToneMappingApplier />
       <color attach="background" args={[PALETTE.ink]} />
       <Suspense fallback={null}>
-        <Stage segments={segments} />
+        <Stage />
       </Suspense>
       <StagePostFX />
       <ProgressBridge onProgress={onProgress} />

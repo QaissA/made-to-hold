@@ -1,6 +1,6 @@
 import Lenis from 'lenis'
 import { useEffect } from 'react'
-import { ACTS, clamp01, LAYER_TOTAL, stage, type ActId } from './stage'
+import { ACTS, clamp01, stage, type ActId } from './stage'
 
 /**
  * Wires Lenis + pointer + act tracking into the shared `stage` object.
@@ -52,7 +52,6 @@ export function useStageDriver(enabled: boolean) {
       const y = window.scrollY
       const max = Math.max(1, document.body.scrollHeight - window.innerHeight)
       stage.scroll = clamp01(y / max)
-      stage.layer = Math.round(stage.scroll * LAYER_TOTAL)
 
       const speed = Math.abs(y - lastScroll)
       lastScroll = y
@@ -66,7 +65,7 @@ export function useStageDriver(enabled: boolean) {
           const id = el.dataset.act as ActId | undefined
           if (id && ACTS[id]) {
             stage.actId = id
-            stage.plate = ACTS[id].plate
+            stage.strand = ACTS[id].strand
             stage.actLocal = clamp01((centre - rect.top) / Math.max(1, rect.height))
           }
           break

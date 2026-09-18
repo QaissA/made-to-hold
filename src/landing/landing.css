@@ -178,15 +178,15 @@
   transform: scaleX(1);
 }
 
-/* ——— machine HUD ————————————————————————————————— */
+/* ——— spool gauge ————————————————————————————————— */
 
-.hud {
+.gauge {
   position: fixed;
   right: clamp(0.85rem, 2.4vw, 2rem);
   bottom: clamp(0.85rem, 2.4vw, 2rem);
   z-index: 50;
-  width: 13.5rem;
-  padding: 0.85rem 0.95rem 0.75rem;
+  width: 14rem;
+  padding: 0.9rem 1rem 0.85rem;
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
@@ -200,55 +200,141 @@
     transform 0.5s var(--ease);
 }
 
-.hud--away {
+.gauge--away {
   opacity: 0;
   transform: translateY(1.5rem);
 }
 
-.hud__row {
+.gauge__row {
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.16rem 0;
+  padding: 0.18rem 0;
 }
 
-.hud__row--foot {
-  margin-top: 0.4rem;
-  padding-top: 0.45rem;
-  border-top: 1px solid var(--line-soft);
-  justify-content: center;
-}
-
-.hud__key {
+.gauge__key {
   color: var(--muted);
+  text-transform: uppercase;
 }
 
-.hud__val {
+.gauge__val {
   font-variant-numeric: tabular-nums;
 }
 
-.hud__val--hot {
+.gauge__val--hot {
   color: var(--ember);
 }
 
-.hud__dim {
-  color: var(--muted);
+.gauge__spool {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line-soft);
 }
 
-.hud__bar {
+.gauge__spool-track {
   position: relative;
-  height: 2px;
-  margin-top: 0.6rem;
+  flex: 1;
+  height: 3px;
   background: rgba(242, 237, 227, 0.12);
   overflow: hidden;
 }
 
-.hud__fill {
+.gauge__spool-fill {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, var(--majorelle-bright), var(--ember));
+  background: var(--bone);
   transform-origin: left;
-  transform: scaleX(0);
+}
+
+/* Legend for the strand's own colour: the filament is coloured by age. */
+.gauge__temp {
+  margin-top: 0.75rem;
+}
+
+.gauge__temp-strip {
+  display: block;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    #fff2e2 0%,
+    var(--ember) 14%,
+    var(--amber) 32%,
+    #d8d2c6 58%,
+    #4238a8 100%
+  );
+}
+
+.gauge__temp-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.3rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ——— hold hint ————————————————————————————————— */
+
+.hold-hint {
+  position: fixed;
+  left: clamp(1.5rem, 6vw, 6.5rem);
+  bottom: 1.2rem;
+  z-index: 49;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone);
+  background: rgba(10, 9, 14, 0.55);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  animation: hint-in 0.7s var(--ease) both;
+}
+
+.hold-hint__ring {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--ember);
+  border-radius: 50%;
+  animation: hint-pulse 1.8s var(--ease-in-out) infinite;
+}
+
+@keyframes hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hint-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.75);
+    opacity: 0.25;
+  }
+}
+
+/* While holding the strand, the whole page reads as grabbed. */
+body.is-holding {
+  user-select: none;
 }
 
 /* ——— anchor rail ————————————————————————————————— */
@@ -766,7 +852,7 @@
   justify-items: end;
 }
 
-/* Keep right-aligned acts clear of the fixed machine HUD. */
+/* Keep right-aligned acts clear of the fixed spool gauge. */
 @media (min-width: 901px) {
   .act--flip {
     padding-right: calc(clamp(1.5rem, 6vw, 6.5rem) + 13rem);
@@ -1157,7 +1243,7 @@
   z-index: 3;
   display: grid;
   gap: 1.5rem;
-  /* Deep bottom padding keeps the last row clear of the fixed machine HUD. */
+  /* Deep bottom padding keeps the last row clear of the fixed spool gauge. */
   padding: clamp(2.5rem, 6vh, 4rem) clamp(1.5rem, 6vw, 6.5rem) 10rem;
   background: var(--ink);
   border-top: 1px solid var(--line-soft);
@@ -1315,7 +1401,8 @@
 
 @media (max-width: 900px) {
   .rail,
-  .hud {
+  .gauge,
+  .hold-hint {
     display: none;
   }
 
