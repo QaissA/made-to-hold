@@ -1,4 +1,9 @@
-import type { StrandId } from '../filament/curves'
+/**
+ * What the stage is showing. These are the studio's actual products, not
+ * abstractions of them — a visitor has to be able to tell what we make from
+ * the object alone.
+ */
+export type ProductId = 'printer' | 'route' | 'lithophane' | 'zellij'
 
 /**
  * The shared stage state.
@@ -30,8 +35,8 @@ export type Stage = {
   actId: ActId
   /** Progress through that act, 0-1. */
   actLocal: number
-  /** Which form the strand should be holding. */
-  strand: StrandId
+  /** Which product the stage should be showing. */
+  product: ProductId
   /** Metres laid so far. Monotonic — the spool only ever empties. */
   metres: number
   /** User asked for calm. */
@@ -50,27 +55,27 @@ export const stage: Stage = {
   pointerY: 0,
   actId: 'hero',
   actLocal: 0,
-  strand: 'vase',
+  product: 'printer',
   metres: 0,
   reduced: false,
   started: false,
 }
 
 /**
- * Act -> anchor word + the form the strand takes.
+ * Act -> anchor word + the product on the stage.
  *
- * The run closes on `vase`: the page ends holding the object it opened by
- * making.
+ * The run opens and closes on the machine: the page ends at the thing that
+ * made everything you just scrolled past.
  */
-export const ACTS: Record<ActId, { word: string; strand: StrandId }> = {
-  overture: { word: 'Form', strand: 'vase' },
-  hero: { word: 'Form', strand: 'vase' },
-  manifesto: { word: 'Matter', strand: 'vase' },
-  effort: { word: 'Effort', strand: 'route' },
-  light: { word: 'Light', strand: 'portrait' },
-  heritage: { word: 'Heritage', strand: 'knot' },
-  craft: { word: 'Craft', strand: 'spool' },
-  yours: { word: 'Yours', strand: 'vase' },
+export const ACTS: Record<ActId, { word: string; product: ProductId }> = {
+  overture: { word: 'Form', product: 'printer' },
+  hero: { word: 'Form', product: 'printer' },
+  manifesto: { word: 'Matter', product: 'printer' },
+  effort: { word: 'Effort', product: 'route' },
+  light: { word: 'Light', product: 'lithophane' },
+  heritage: { word: 'Heritage', product: 'zellij' },
+  craft: { word: 'Craft', product: 'printer' },
+  yours: { word: 'Yours', product: 'zellij' },
 }
 
 export function clamp01(v: number): number {

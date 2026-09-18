@@ -3,11 +3,10 @@ import { extruder } from '../scenes/strandState'
 import { SPOOL_METRES, stage } from '../scroll/stage'
 
 const FORM_LABEL: Record<string, string> = {
-  vase: 'VASE.GCODE',
-  route: 'ROUTE.GPX',
-  portrait: 'SPIRAL.JPG',
-  knot: 'KHATAM.SVG',
-  spool: 'REWIND.GCODE',
+  printer: 'VASE.GCODE',
+  route: 'CORNICHE.GPX',
+  lithophane: 'LITHO.JPG',
+  zellij: 'KHATAM.SVG',
 }
 
 /**
@@ -38,7 +37,7 @@ export function SpoolGauge() {
         rootRef.current.classList.toggle('gauge--away', away)
       }
 
-      const form = FORM_LABEL[stage.strand] ?? ''
+      const form = FORM_LABEL[stage.product] ?? ''
       if (formRef.current && form !== lastForm) {
         lastForm = form
         formRef.current.textContent = form

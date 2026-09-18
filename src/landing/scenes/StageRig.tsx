@@ -32,13 +32,13 @@ const KEYS: Record<ActId, Key> = {
   hero: { pos: [2.1, 1.05, 4.2], target: [0, 0.22, 0], lateral: -1.3 },
   manifesto: { pos: [0.4, 3.0, 4.1], target: [0, -0.1, 0], lateral: 0.35 },
   // Down at the horizon and along the run, so elevation reads as elevation.
-  effort: { pos: [1.15, 0.62, 3.5], target: [0, 0.02, 0], lateral: -1.0 },
+  effort: { pos: [1.3, 0.85, 3.1], target: [0, 0.05, 0], lateral: -1.55 },
   // The spiral portrait is a flat coil — anything but head-on is noise.
-  light: { pos: [0, 0.15, 4.35], target: [0, 0, 0], lateral: 1.05 },
+  light: { pos: [0.1, 0.35, 2.75], target: [0, 0.05, 0], lateral: 1.15 },
   // Pattern before object.
-  heritage: { pos: [0.25, 3.6, 2.6], target: [0, 0, 0], lateral: 0 },
-  craft: { pos: [3.2, 1.5, 3.4], target: [0, 0, 0], lateral: -0.75 },
-  yours: { pos: [1.5, 1.0, 5.4], target: [0, 0.05, 0], lateral: -0.35 },
+  heritage: { pos: [0.2, 2.45, 2.05], target: [0, 0, 0], lateral: -0.15 },
+  craft: { pos: [3.0, 1.6, 3.3], target: [0, 0.15, 0], lateral: -0.9 },
+  yours: { pos: [1.3, 1.5, 3.6], target: [0, 0.05, 0], lateral: -0.5 },
 }
 
 /**
@@ -139,7 +139,7 @@ export function StageRig() {
           main thing separating the object from the ground, so it stays firm. */}
       <directionalLight
         position={[-3.6, 4.4, 3.0]}
-        intensity={1.25 * SET_GAIN}
+        intensity={2.0 * SET_GAIN}
         color="#fff6e8"
         castShadow
         shadow-mapSize={[2048, 2048]}
@@ -154,12 +154,12 @@ export function StageRig() {
       />
 
       {/*
-        A light set needs a genuine ambient floor, not just a key. Without it a
-        paper-albedo surface renders well below paper once tone-mapped, and the
-        lit ground visibly splits from the unlit backdrop. Dark filament is
-        barely lifted by this — ambient scales with albedo, so contrast holds.
+        A light set needs a genuine ambient floor or a paper-albedo surface
+        renders well below paper and the lit ground splits from the unlit
+        backdrop. But ambient alone flattens everything: total irradiance is
+        held near pi while the key carries most of it, so products still model.
       */}
-      <ambientLight intensity={1.25 * SET_GAIN} color="#fffaf2" />
+      <ambientLight intensity={0.72 * SET_GAIN} color="#fffaf2" />
       <hemisphereLight args={['#ffffff', '#cfc7b8', 0.55 * SET_GAIN]} />
 
       {/* Warm fill from below-front: lights the underside of every winding */}

@@ -65,7 +65,7 @@ export function useStageDriver(enabled: boolean) {
           const id = el.dataset.act as ActId | undefined
           if (id && ACTS[id]) {
             stage.actId = id
-            stage.strand = ACTS[id].strand
+            stage.product = ACTS[id].product
             stage.actLocal = clamp01((centre - rect.top) / Math.max(1, rect.height))
           }
           break

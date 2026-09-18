@@ -9,18 +9,17 @@ import {
 } from '@react-three/postprocessing'
 import { Canvas, useThree } from '@react-three/fiber'
 import { ToneMappingMode } from 'postprocessing'
-import { Suspense, useEffect, useMemo } from 'react'
+import { Suspense, useEffect } from 'react'
 import * as THREE from 'three'
 import {
   DEFAULT_EXPOSURE,
   OUTPUT_COLOR_SPACE,
   TONE_MAP_PRESETS,
 } from '../config/color'
-import { buildStrandData } from './filament/strandData'
 import { Backdrop } from './scenes/Backdrop'
 import { Ground } from './scenes/Ground'
 import { StageRig } from './scenes/StageRig'
-import { Strand } from './scenes/Strand'
+import { ProductStage } from './scenes/ProductStage'
 
 const PORTRAIT_URL = '/textures/lithophane-portrait.jpg'
 
@@ -47,19 +46,13 @@ function ProgressBridge({ onProgress }: { onProgress: (p: number) => void }) {
 function Stage() {
   const portrait = useTexture(PORTRAIT_URL)
 
-  const data = useMemo(
-    () => buildStrandData(portrait.image as HTMLImageElement),
-    [portrait],
-  )
-  useEffect(() => () => data.dispose(), [data])
-
   return (
     <>
       <Backdrop />
       <Environment files="/hdri/studio.hdr" environmentIntensity={0.32} />
       <StageRig />
       <Ground />
-      <Strand data={data} />
+      <ProductStage portrait={portrait} />
     </>
   )
 }

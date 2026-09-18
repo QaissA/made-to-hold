@@ -23,8 +23,8 @@ const GRAIN = encodeURIComponent(
 const TICKER = [
   'Made to hold',
   'نطبع ما يهم',
-  'One continuous line',
-  'Never cut',
+  'Give it form',
+  'From screen to substance',
   'Casablanca',
 ]
 
@@ -32,12 +32,12 @@ const CATALOGUE = [
   {
     n: '04',
     title: 'Topography',
-    copy: 'Any coastline, any ridge line, wound flat into a tile you can set on a desk.',
+    copy: 'Any coastline, any ridge line, cut to a tile you can set on a desk.',
   },
   {
     n: '05',
     title: 'Soundwave',
-    copy: 'Six seconds of a voice, where the strand thickens on every syllable.',
+    copy: 'Six seconds of a voice, raised into a ridge you can run a thumb along.',
   },
   {
     n: '06',
@@ -47,7 +47,7 @@ const CATALOGUE = [
   {
     n: '07',
     title: 'Architecture',
-    copy: 'Massing models and facade studies, wound overnight for the morning review.',
+    copy: 'Massing models and facade studies, printed overnight for the morning review.',
   },
 ]
 
@@ -132,8 +132,8 @@ export function LandingPage() {
 
             <p className="hero__lede">
               <SplitText by="word" step={0.03} delay={0.55}>
-                One filament, never cut. It leaves the nozzle at 214°C and keeps
-                going until it is the thing you asked for.
+                A run you did. A face you love. A pattern eight centuries old.
+                We print them, in Casablanca, and hand them to you.
               </SplitText>
             </p>
 
@@ -173,9 +173,9 @@ export function LandingPage() {
                 also forgettable.
               </p>
               <p>
-                So we give it a path. A single line, two hundred microns wide,
-                that starts somewhere and does not stop — and when it finally
-                does, there is an object on the bed that was not there before.
+                So we put it on a bed and build it, two hundred microns at a
+                time, until there is an object in the room that was not there
+                before — one you can pick up, and put down somewhere.
               </p>
             </div>
           </div>
@@ -191,13 +191,14 @@ export function LandingPage() {
             </p>
             <h2 className="product__title">
               <SplitText by="word" step={0.05}>
-                Your route, as one line.
+                Your route, as terrain.
               </SplitText>
             </h2>
             <p className="product__copy">
-              Send a GPX file or a Strava link. Height is your elevation.
-              Thickness is your gradient — the strand physically swells on the
-              climbs. Nothing is drawn on it. The line is the data.
+              Send a GPX file or a Strava link. We project your actual
+              coordinates — longitude squeezed by cos(latitude), the way any
+              honest map does it — then lift the line you ran out of the ground
+              it crossed. Nothing is printed on the tile. The shape is the walk.
             </p>
             <dl className="spec">
               <div>
@@ -206,7 +207,7 @@ export function LandingPage() {
               </div>
               <div>
                 <dt>Format</dt>
-                <dd>180 &times; 180 mm, wall-mounted</dd>
+                <dd>180 &times; 180 mm tile</dd>
               </div>
               <div>
                 <dt>Material</dt>
@@ -232,14 +233,14 @@ export function LandingPage() {
             </p>
             <h2 className="product__title">
               <SplitText by="word" step={0.05}>
-                A face, wound forty-eight times.
+                A face that only exists in light.
               </SplitText>
             </h2>
             <p className="product__copy">
-              One spiral, from the centre outward. In the highlights the strand
-              thickens until neighbouring turns touch and merge; in the shadows
-              it thins away to nothing and the dark comes through. There is no
-              image on the surface — the winding is the only ink there is.
+              A lithophane is a photograph made of thickness. Flat on a table
+              it is a blank bone-white panel. Put a lamp behind it and the thin
+              parts glow, the thick parts hold back the light, and someone you
+              love comes back out of it.
             </p>
             <dl className="spec">
               <div>
@@ -247,8 +248,8 @@ export function LandingPage() {
                 <dd>One photograph, 2 MP+</dd>
               </div>
               <div>
-                <dt>Winding</dt>
-                <dd>48 turns &middot; 0.25 &ndash; 2.2 mm</dd>
+                <dt>Depth range</dt>
+                <dd>0.8 &ndash; 3.4 mm</dd>
               </div>
               <div>
                 <dt>Finish</dt>
@@ -270,14 +271,14 @@ export function LandingPage() {
             </p>
             <h2 className="product__title">
               <SplitText by="word" step={0.05}>
-                Eight-fold, and one single path.
+                Eight centuries, forty-one pieces.
               </SplitText>
             </h2>
             <p className="product__copy">
               Zellij was never drawn. It was cut, by hand, from fired clay —
-              eight-fold symmetry reached by pieces that interlock. We reach the
-              same symmetry the only way a printer can: one closed path that
-              crosses itself, eight times around.
+              khatam stars, safts and knots that lock together and only go back
+              one way. We keep the geometry exact and change only the tool, so
+              it arrives as a puzzle you assemble on a table.
             </p>
             <dl className="spec">
               <div>
@@ -285,8 +286,8 @@ export function LandingPage() {
                 <dd>Khatam 8 &middot; Fez lineage</dd>
               </div>
               <div>
-                <dt>Path</dt>
-                <dd>Closed, 8 &times; 3 crossings</dd>
+                <dt>Pieces</dt>
+                <dd>41, interlocking</dd>
               </div>
               <div>
                 <dt>Material</dt>
@@ -315,8 +316,8 @@ export function LandingPage() {
             <ol className="steps">
               {[
                 ['Upload', 'A file, a link, or a photo of the thing you mean.'],
-                ['Path', 'We solve it as one route the nozzle can actually walk.'],
-                ['Extrude', '0.2 mm wide. Eight to forty hours without stopping.'],
+                ['Model', 'We rebuild it properly — relief, thickness, fit.'],
+                ['Print', '0.2 mm layers. Eight to forty hours on the bed.'],
                 ['Finish', 'Sanded, sealed, packed, and put in your hands.'],
               ].map(([title, copy], i) => (
                 <li className="step" key={title}>
@@ -328,7 +329,7 @@ export function LandingPage() {
             </ol>
 
             <div className="catalogue">
-              <p className="catalogue__label">Also on the spool</p>
+              <p className="catalogue__label">Also on the bed</p>
               <div className="catalogue__grid">
                 {CATALOGUE.map((item) => (
                   <TiltCard className="card" key={item.n}>
