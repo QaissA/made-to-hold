@@ -2,21 +2,18 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Hero } from './Hero'
 import { Overture } from './Overture'
+import './landing.css'
 import { useLenis } from './scroll/useLenis'
 
 const GRAIN_SVG = encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160">
+  `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180">
     <filter id="n">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
     </filter>
     <rect width="100%" height="100%" filter="url(#n)"/>
   </svg>`,
 )
 
-/**
- * Marketing hero — one idea, one object, quiet type.
- * Brand first; 3D is the emotional plane (lithophane + light).
- */
 export function LandingPage() {
   const lenis = useLenis()
   const scrollProgressRef = useRef(0)
@@ -35,28 +32,21 @@ export function LandingPage() {
   }, [lenis])
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        minHeight: '200vh',
-        background: 'var(--bg)',
-        color: 'var(--bone)',
-      }}
-    >
-      <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          width: '100%',
-          height: '100vh',
-          overflow: 'hidden',
-          touchAction: 'pan-y',
-        }}
-      >
-        <Hero
-          onProgress={setProgress}
-          scrollProgressRef={scrollProgressRef}
+    <div className="mth">
+      <div className="mth-hero">
+        <div className="mth-hero__canvas">
+          <Hero
+            onProgress={setProgress}
+            scrollProgressRef={scrollProgressRef}
+          />
+        </div>
+        <div className="mth-hero__veil" aria-hidden />
+        <div
+          className="mth-hero__grain"
+          aria-hidden
+          style={{
+            backgroundImage: `url("data:image/svg+xml,${GRAIN_SVG}")`,
+          }}
         />
 
         {showOverture && (
@@ -66,201 +56,141 @@ export function LandingPage() {
           />
         )}
 
-        {/* Top bar — brand mark, not a dashboard */}
-        <header
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 3,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '1.25rem clamp(1.25rem, 4vw, 2.5rem)',
-            pointerEvents: 'none',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '1.05rem',
-              letterSpacing: '0.04em',
-              color: 'var(--bone)',
-            }}
-          >
-            Made to hold
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.65rem',
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              color: 'var(--muted)',
-            }}
-          >
-            Light
-          </span>
-          <Link
-            to="/lab"
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '0.75rem',
-              letterSpacing: '0.08em',
-              color: 'var(--muted)',
-              textDecoration: 'none',
-              pointerEvents: 'auto',
-              opacity: 0.55,
-            }}
-          >
+        <header className="mth-nav">
+          <span className="mth-nav__brand">Made to hold</span>
+          <span className="mth-nav__anchor">Light</span>
+          <Link className="mth-nav__link" to="/lab">
             Lab
           </Link>
         </header>
 
         {!showOverture && (
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              bottom: 0,
-              zIndex: 3,
-              width: 'min(100%, 34rem)',
-              padding:
-                '0 clamp(1.25rem, 4vw, 2.75rem) clamp(2rem, 6vh, 3.5rem)',
-              pointerEvents: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.1rem',
-              background:
-                'linear-gradient(90deg, rgba(14,13,15,0.72) 0%, rgba(14,13,15,0.35) 70%, transparent 100%)',
-            }}
-          >
-            <h1
-              style={{
-                margin: 0,
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.75rem, 8vw, 5.5rem)',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-                lineHeight: 0.95,
-                color: 'var(--bone)',
-                maxWidth: '12ch',
-              }}
-            >
-              Made to hold.
-            </h1>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: 'var(--font-serif, var(--font-sans))',
-                fontSize: 'clamp(0.95rem, 1.6vw, 1.15rem)',
-                lineHeight: 1.45,
-                color: 'var(--muted)',
-                maxWidth: '28ch',
-                fontStyle: 'italic',
-              }}
-            >
+          <div className="mth-hero__copy">
+            <p className="mth-eyebrow">3D printing studio</p>
+            <h1 className="mth-hero__title">Made to hold.</h1>
+            <p className="mth-hero__lede">
               Hold it to the light. There they are.
             </p>
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                gap: '1.25rem',
-                marginTop: '0.35rem',
-                pointerEvents: 'auto',
-              }}
-            >
-              <a
-                href="#start"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0.85rem 1.5rem',
-                  background: 'var(--saffron)',
-                  color: 'var(--bg)',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  textDecoration: 'none',
-                  borderRadius: 2,
-                }}
-              >
+            <div className="mth-hero__actions">
+              <a className="mth-cta" href="#order">
                 Start your print
               </a>
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.65rem',
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  color: 'var(--muted)',
-                }}
-              >
-                Scroll
-              </span>
+              <span className="mth-scroll-hint">Scroll</span>
             </div>
           </div>
         )}
-
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 2,
-            pointerEvents: 'none',
-            opacity: 0.035,
-            backgroundImage: `url("data:image/svg+xml,${GRAIN_SVG}")`,
-            backgroundRepeat: 'repeat',
-            mixBlendMode: 'overlay',
-          }}
-        />
       </div>
 
-      {/* Quiet next beat placeholder for P2 spine */}
-      <section
-        id="start"
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: 'clamp(2rem, 6vw, 5rem)',
-          background: 'var(--bg-plaster)',
-        }}
-      >
-        <p
-          style={{
-            margin: 0,
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.7rem',
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color: 'var(--muted)',
-          }}
-        >
-          Form
-        </p>
-        <h2
-          style={{
-            margin: '1rem 0 0',
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(1.75rem, 4vw, 3rem)',
-            fontWeight: 500,
-            lineHeight: 1.15,
-            maxWidth: '18ch',
-            color: 'var(--bone)',
-          }}
-        >
+      <section className="mth-section mth-section--plaster" id="manifesto">
+        <p className="mth-kicker">Form</p>
+        <h2 className="mth-display">
           We turn what matters into what you can hold.
         </h2>
+        <p className="mth-body">
+          A run is a feeling. A photo is a moment. A pattern is a thousand years
+          of craft. We give them weight — printed, finished, and made to live
+          with you.
+        </p>
       </section>
+
+      <section className="mth-section--dark" id="products" aria-label="Products">
+        <article className="mth-chapter">
+          <div>
+            <p className="mth-chapter__index">01 — Effort</p>
+            <h3 className="mth-chapter__title">Strava relief</h3>
+            <p className="mth-chapter__text">
+              Your route lifts off the map into a landscape you can set on a
+              shelf.
+            </p>
+          </div>
+          <div
+            className="mth-chapter__visual mth-chapter__visual--strava"
+            aria-hidden
+          >
+            <span>Route → relief</span>
+          </div>
+        </article>
+
+        <article className="mth-chapter mth-chapter--flip">
+          <div>
+            <p className="mth-chapter__index">02 — Light</p>
+            <h3 className="mth-chapter__title">Lithophane</h3>
+            <p className="mth-chapter__text">
+              A bone-white panel. A warm light behind it. A face that only
+              appears when you hold it to the glow.
+            </p>
+          </div>
+          <div
+            className="mth-chapter__visual mth-chapter__visual--litho"
+            aria-hidden
+          >
+            <span>Photo → light</span>
+          </div>
+        </article>
+
+        <article className="mth-chapter">
+          <div>
+            <p className="mth-chapter__index">03 — Heritage</p>
+            <h3 className="mth-chapter__title">Zellij puzzle</h3>
+            <p className="mth-chapter__text">
+              Moroccan geometry, printed as interlocking pieces you assemble by
+              hand.
+            </p>
+          </div>
+          <div
+            className="mth-chapter__visual mth-chapter__visual--zellij"
+            aria-hidden
+          >
+            <span>Pattern → form</span>
+          </div>
+        </article>
+      </section>
+
+      <section className="mth-section mth-section--plaster" id="process">
+        <p className="mth-kicker">Craft</p>
+        <h2 className="mth-display">From screen to substance.</h2>
+        <div className="mth-process">
+          <div className="mth-step">
+            <p className="mth-step__n">01</p>
+            <p className="mth-step__t">Upload</p>
+            <p className="mth-step__d">GPX, photo, or a pattern preference.</p>
+          </div>
+          <div className="mth-step">
+            <p className="mth-step__n">02</p>
+            <p className="mth-step__t">We model</p>
+            <p className="mth-step__d">Relief, thickness, and fit — tuned by hand.</p>
+          </div>
+          <div className="mth-step">
+            <p className="mth-step__n">03</p>
+            <p className="mth-step__t">We print</p>
+            <p className="mth-step__d">Layer by layer, until it can be held.</p>
+          </div>
+          <div className="mth-step">
+            <p className="mth-step__n">04</p>
+            <p className="mth-step__t">You hold</p>
+            <p className="mth-step__d">Finished, packed, and yours.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mth-close" id="order">
+        <p className="mth-kicker">Yours</p>
+        <h2 className="mth-close__title">Start your print.</h2>
+        <p className="mth-body" style={{ marginTop: '1.25rem' }}>
+          Tell us what you want to materialize. We’ll reply with a quote.
+        </p>
+        <div className="mth-hero__actions" style={{ marginTop: '2rem' }}>
+          <a className="mth-cta" href="mailto:hello@madeto.hold">
+            Email the studio
+          </a>
+        </div>
+      </section>
+
+      <footer className="mth-footer">
+        <span>Made to hold · Morocco</span>
+        <span>نطبع ما يهم</span>
+        <Link to="/lab">Look-dev lab</Link>
+      </footer>
     </div>
   )
 }
