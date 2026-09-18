@@ -1,19 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  /* — Rebrand: The Print Line — */
-  --ink: #05070e;
-  --ink-raised: #0d1120;
+  /* — Light theme: Daylight Studio — */
+  --paper: #f2ede3;
+  --paper-raised: #fbf8f2;
+  /* Scrims and translucent panels are all built from this, so the theme can
+     be flipped by changing one triple rather than twenty rgba() literals. */
+  --paper-rgb: 242, 237, 227;
+
+  --ink: #0b0c12;
+  --ink-rgb: 11, 12, 18;
+  --muted: #6d6a78;
+
   --majorelle: #3b2fe8;
-  --majorelle-bright: #6b5bff;
+  --majorelle-bright: #5646ff;
   --ember: #ff6a2b;
   --amber: #ffb45c;
   --jade: #1f6e5c;
-  --bone: #f2ede3;
-  --muted: #8b90a8;
 
-  --line: rgba(216, 224, 255, 0.12);
-  --line-soft: rgba(216, 224, 255, 0.07);
+  /* Accents dark enough to be read as text on paper. */
+  --ember-ink: #c2410c;
+  --amber-ink: #b47216;
+
+  --line: rgba(11, 12, 18, 0.14);
+  --line-soft: rgba(11, 12, 18, 0.08);
 
   --font-display: 'Syne', 'Space Grotesk', sans-serif;
   --font-sans: 'Space Grotesk', system-ui, sans-serif;
@@ -23,7 +33,7 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
@@ -39,8 +49,8 @@ html {
 
 body {
   margin: 0;
-  background: var(--ink);
-  color: var(--bone);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -55,5 +65,5 @@ body {
 
 ::selection {
   background: var(--ember);
-  color: var(--ink);
+  color: var(--paper);
 }

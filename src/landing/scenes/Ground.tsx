@@ -3,10 +3,9 @@ import * as THREE from 'three'
 import { PALETTE } from '../../config/palette'
 
 /**
- * The floor is not scenery — it exists so the strand casts a real shadow and
- * reads as an object with a place, rather than a graphic floating in a void.
- * Concentric machined rings give the light something to catch without ever
- * competing with the filament.
+ * The floor is not scenery — it exists so the strand casts a real shadow. On a
+ * light set that shadow is the main thing separating the object from the
+ * ground, so the plane stays close to paper and the rings stay very faint.
  */
 function ringTexture(): THREE.CanvasTexture {
   const size = 1024
@@ -14,11 +13,11 @@ function ringTexture(): THREE.CanvasTexture {
   canvas.width = canvas.height = size
   const ctx = canvas.getContext('2d')!
 
-  ctx.fillStyle = '#04060E'
+  ctx.fillStyle = '#F2EDE3'
   ctx.fillRect(0, 0, size, size)
 
   const c = size / 2
-  ctx.strokeStyle = 'rgba(150,170,255,0.10)'
+  ctx.strokeStyle = 'rgba(11,12,18,0.055)'
   for (let r = 14; r < c; r += 14) {
     ctx.lineWidth = r % 112 === 0 ? 2.2 : 0.8
     ctx.beginPath()
@@ -28,8 +27,8 @@ function ringTexture(): THREE.CanvasTexture {
 
   // Fade the rings out toward the edge so the plane dissolves into fog.
   const fade = ctx.createRadialGradient(c, c, size * 0.12, c, c, size * 0.5)
-  fade.addColorStop(0, 'rgba(4,6,14,0)')
-  fade.addColorStop(1, 'rgba(4,6,14,1)')
+  fade.addColorStop(0, 'rgba(242,237,227,0)')
+  fade.addColorStop(1, 'rgba(242,237,227,1)')
   ctx.fillStyle = fade
   ctx.fillRect(0, 0, size, size)
 
@@ -63,7 +62,7 @@ export function Ground() {
       <planeGeometry args={[GROUND_SIZE, GROUND_SIZE]} />
       <meshStandardMaterial
         map={map}
-        color={PALETTE.ink}
+        color={PALETTE.paper}
         roughness={0.96}
         metalness={0}
       />

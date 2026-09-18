@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { STRAND_TEMP } from '../../config/palette'
 
 /**
  * The strand material — v2's signature.
@@ -15,8 +16,9 @@ import * as THREE from 'three'
  * the line re-lay itself end to end.
  *
  * Colour is temperature. Distance *behind the print head* drives a ramp from
- * white-hot through ember and bone to cold blue, so the strand wears its own
- * history: you can see the order in which it was laid down.
+ * molten ember down to cold graphite, so the strand wears its own history:
+ * you can see the order in which it was laid down. On a paper ground the
+ * settled end has to be the DARK end, or a finished print would vanish.
  *
  * Patched MeshStandardMaterial rather than a raw ShaderMaterial so the scene
  * keeps PBR + IBL + AgX per project canon.
@@ -48,7 +50,7 @@ export type StrandUniforms = {
   uTime: THREE.IUniform<number>
   uHot: THREE.IUniform<THREE.Color>
   uWarm: THREE.IUniform<THREE.Color>
-  uBone: THREE.IUniform<THREE.Color>
+  uSettled: THREE.IUniform<THREE.Color>
   uCold: THREE.IUniform<THREE.Color>
 }
 
@@ -107,7 +109,7 @@ const RING = /* glsl */ `
   centre += nrm * sin( aU * 210.0 + uTime * 2.6 ) * melt * 0.03;
 
   // Local warmth under the pointer — the filament softens where you touch it.
-  float touch = exp( -distance( centre, uTouch ) * 4.5 ) * uTouchStrength;
+  float touch = exp( -distance( centre, uTouch ) * 7.5 ) * uTouchStrength;
   rad *= 1.0 + touch * 0.5;
 
   // Everything ahead of the print head has not been extruded yet.
@@ -133,7 +135,7 @@ const RING = /* glsl */ `
 const FRAG_DECLS = /* glsl */ `
 uniform vec3 uHot;
 uniform vec3 uWarm;
-uniform vec3 uBone;
+uniform vec3 uSettled;
 uniform vec3 uCold;
 uniform float uCool;
 
@@ -145,7 +147,7 @@ varying float vDrawn;
 /** Extrusion temperature as a function of how long ago it was laid down. */
 vec3 strandTemperature( float age ) {
   vec3 c = mix( uHot, uWarm, smoothstep( 0.0, 0.05, age ) );
-  c = mix( c, uBone, smoothstep( 0.04, 0.22, age ) );
+  c = mix( c, uSettled, smoothstep( 0.04, 0.22, age ) );
   c = mix( c, uCold, smoothstep( 0.3, 0.9, age ) );
   return c;
 }
@@ -155,14 +157,14 @@ const FRAG_ALBEDO = /* glsl */ `
   // A settled print is one colour. Heat is a transient of making it, so the
   // ramp fades out once the strand stops moving — which also stops the colour
   // gradient from fighting forms that carry an image in their own thickness.
-  diffuseColor.rgb *= mix( strandTemperature( vAge ), uBone, uCool );
+  diffuseColor.rgb *= mix( strandTemperature( vAge ), uSettled, uCool );
 `
 
 const FRAG_EMISSIVE = /* glsl */ `
   // Only freshly extruded filament genuinely glows; the rest is lit.
   float glow = exp( -vAge * 34.0 );
-  vec3 heat = uHot * glow * 2.4 * ( 1.0 - uCool );
-  heat += uWarm * vMelt * 2.2;
+  vec3 heat = uHot * glow * 1.9 * ( 1.0 - uCool );
+  heat += uWarm * vMelt * 1.7;
   heat += uWarm * vTouch * 1.5;
   totalEmissiveRadiance += heat * vDrawn;
 `
@@ -188,16 +190,16 @@ export function createStrandMaterial(): {
     uTouchStrength: { value: 0 },
     uCool: { value: 0 },
     uTime: { value: 0 },
-    uHot: { value: new THREE.Color('#FF6A2B') },
-    uWarm: { value: new THREE.Color('#FFB45C') },
-    uBone: { value: new THREE.Color('#D8D2C6') },
-    uCold: { value: new THREE.Color('#4238A8') },
+    uHot: { value: new THREE.Color(STRAND_TEMP.hot) },
+    uWarm: { value: new THREE.Color(STRAND_TEMP.warm) },
+    uSettled: { value: new THREE.Color(STRAND_TEMP.settled) },
+    uCold: { value: new THREE.Color(STRAND_TEMP.cold) },
   }
 
   const material = new THREE.MeshStandardMaterial({
     color: 0xffffff,
-    roughness: 0.42,
-    metalness: 0.05,
+    roughness: 0.82,
+    metalness: 0.0,
   })
 
   material.onBeforeCompile = (shader) => {

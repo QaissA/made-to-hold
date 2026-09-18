@@ -56,7 +56,7 @@ function Stage() {
   return (
     <>
       <Backdrop />
-      <Environment files="/hdri/studio.hdr" environmentIntensity={0.3} />
+      <Environment files="/hdri/studio.hdr" environmentIntensity={0.32} />
       <StageRig />
       <Ground />
       <Strand data={data} />
@@ -65,23 +65,30 @@ function Stage() {
 }
 
 /**
- * N8AO -> Bloom -> SMAA -> Vignette -> ToneMapping(AgX), per the post/AA
- * playbook. Bloom threshold sits at 1.0 so only genuinely molten filament
- * blooms; everything cooler stays a lit surface.
+ * N8AO -> Bloom -> SMAA -> Vignette -> ToneMapping, per the post/AA playbook.
+ *
+ * The transform is Khronos PBR NEUTRAL here, not AgX. AgX is a filmic curve
+ * built around mid-grey: it lifts shadows and rolls off highlights, so on a
+ * high-key paper set it cannot hold paper AND graphite at once — either the
+ * ground goes grey or the object does. Neutral preserves albedo, which is the
+ * whole point of a product set. The lab route keeps AgX for Blender parity.
+ *
+ * Bloom threshold sits at 1.0 so only genuinely molten filament blooms. AO does
+ * the heavy lifting here — contact darkening is most of what reads as form.
  */
 function StagePostFX() {
   return (
     <EffectComposer enableNormalPass={false} multisampling={0}>
-      <N8AO aoRadius={0.4} intensity={1.4} quality="medium" halfRes />
+      <N8AO aoRadius={0.38} intensity={2.1} quality="medium" halfRes />
       <Bloom
         luminanceThreshold={1.0}
         luminanceSmoothing={0.24}
-        intensity={1.5}
+        intensity={0.55}
         mipmapBlur
       />
       <SMAA />
-      <Vignette offset={0.26} darkness={0.74} eskil={false} />
-      <ToneMapping mode={ToneMappingMode.AGX} />
+      <Vignette offset={0.5} darkness={0.22} eskil={false} />
+      <ToneMapping mode={ToneMappingMode.NEUTRAL} />
     </EffectComposer>
   )
 }

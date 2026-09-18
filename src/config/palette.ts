@@ -1,46 +1,67 @@
 /**
- * Made to Hold — brand tokens (rebrand: "The Print Line").
+ * Made to Hold — brand tokens (light theme: "Daylight Studio").
  *
- * Direction: near-black kiln dark, one electric structural blue (majorelle),
- * one hot extrusion orange (the nozzle), bone for type. Everything else is
- * temperature: the site is a machine that is currently printing.
+ * The page is paper. The filament is the dark thing lying on it. Everything
+ * here depends on that inversion: heat still reads as heat because it is
+ * emissive and saturated, but *settled* filament has to be graphite, not bone,
+ * or it disappears into the ground it is sitting on.
  */
 export const PALETTE = {
-  /** Base canvas — a cool blue-black, so warm filament always reads warm */
-  ink: '#05070E',
-  /** Raised panels */
-  inkRaised: '#0D1120',
+  /** Page ground — warm off-white */
+  paper: '#F2EDE3',
+  /** Raised panels, cards */
+  paperRaised: '#FBF8F2',
+  /** Primary text */
+  ink: '#0B0C12',
+  /** Secondary text */
+  muted: '#6D6A78',
+
   /** Structural accent — zellij, frame, cold light */
   majorelle: '#3B2FE8',
-  majorelleBright: '#6B5BFF',
-  /** Hot extrusion — nozzle, CTA, the print frontier */
+  majorelleBright: '#5646FF',
+  /** Hot extrusion — fills, the nozzle, the CTA */
   ember: '#FF6A2B',
-  /** Cooling filament / lithophane glow */
+  /** Ember deep enough to stay legible as text on paper */
+  emberInk: '#C2410C',
+  /** Cooling filament */
   amber: '#FFB45C',
+  /** Amber deep enough to stay legible as text on paper */
+  amberInk: '#B47216',
   /** Tertiary heritage green */
   jade: '#1F6E5C',
-  /** Primary text */
-  bone: '#F2EDE3',
-  /** Secondary text */
-  muted: '#8E8A9C',
 } as const
 
 /**
- * The 3D atmosphere. Cold indigo so the ember strand has something to
- * separate from; the scene fog matches `horizon` so the ground dissolves
- * into the backdrop instead of ending at a visible edge.
+ * The 3D set: a photographic sweep rather than a void. Paper everywhere,
+ * deepening below so the subject has something to stand on, with a cool grey
+ * wash behind it. Scene fog matches `horizon` so the ground has no visible edge.
  */
 export const BACKDROP = {
-  zenith: '#03040A',
-  horizon: '#090D22',
-  floor: '#020308',
-  glow: '#1A2358',
+  zenith: '#F8F5EF',
+  horizon: '#F2EDE3',
+  floor: '#CFC7B8',
+  /** Mixed toward, not added — on paper that reads as soft shadow. */
+  pool: '#E3DDD2',
+} as const
+
+/**
+ * Filament colour by age, hottest first. Inverted from a dark ground: a
+ * finished print lands on graphite so it reads as an object, and only
+ * genuinely molten filament is bright.
+ */
+export const STRAND_TEMP = {
+  hot: '#FF5A1F',
+  warm: '#D2691E',
+  /** Where a settled print ends up */
+  settled: '#17181F',
+  /** The oldest windings, cooled furthest */
+  cold: '#0C0D13',
 } as const
 
 /** Per-act accent, used by both DOM and 3D. */
 export const ACT_ACCENT = {
-  form: PALETTE.majorelleBright,
+  form: PALETTE.majorelle,
   effort: PALETTE.ember,
-  light: PALETTE.amber,
+  light: PALETTE.amberInk,
   heritage: PALETTE.majorelle,
 } as const

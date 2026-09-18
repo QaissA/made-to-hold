@@ -41,6 +41,17 @@ const KEYS: Record<ActId, Key> = {
   yours: { pos: [1.5, 1.0, 5.4], target: [0, 0.05, 0], lateral: -0.35 },
 }
 
+/**
+ * Global exposure for the set — every light, the fog colour and the backdrop
+ * scale together, so this one number re-exposes the whole scene.
+ *
+ * Sits at 1 because the composer runs a NEUTRAL transform (see StageCanvas):
+ * total irradiance of roughly pi lands a paper albedo on paper and leaves
+ * graphite as graphite. Under a filmic curve it would need to be ~2.6, and the
+ * dark filament would wash out to mid-grey.
+ */
+export const SET_GAIN = 1
+
 function easeInOut(t: number) {
   const x = t < 0 ? 0 : t > 1 ? 1 : t
   return x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2
@@ -54,6 +65,13 @@ export function StageRig() {
   const right = useMemo(() => new THREE.Vector3(), [])
   const up = useMemo(() => new THREE.Vector3(0, 1, 0), [])
   const tmp = useMemo(() => new THREE.Vector3(), [])
+
+  // A Color can hold values above 1; fog is applied pre-tone-map, so it has to
+  // sit at the same exposure as everything else or the horizon splits.
+  const fogColor = useMemo(
+    () => new THREE.Color(BACKDROP.horizon).multiplyScalar(SET_GAIN),
+    [],
+  )
 
   const warm = useRef<THREE.PointLight>(null)
   const cold = useRef<THREE.PointLight>(null)
@@ -107,20 +125,22 @@ export function StageRig() {
     lit.current.warm += (warmTarget - lit.current.warm) * Math.min(1, dt * 2.2)
     lit.current.cold += (coldTarget - lit.current.cold) * Math.min(1, dt * 2.2)
 
-    if (warm.current) warm.current.intensity = 1 + lit.current.warm * 9
-    if (cold.current) cold.current.intensity = 1 + lit.current.cold * 7
+    if (warm.current) warm.current.intensity = (0.3 + lit.current.warm * 3.4) * SET_GAIN
+    if (cold.current) cold.current.intensity = (0.3 + lit.current.cold * 2.6) * SET_GAIN
   })
 
   return (
     <>
-      {/* Matches the backdrop horizon so the ground has no visible edge. */}
-      <fogExp2 attach="fog" args={[BACKDROP.horizon, 0.115]} />
+      {/* Matches the backdrop horizon so the ground has no visible edge. Gained
+          like everything else — fog mixes in linear space, before tone mapping. */}
+      <fogExp2 attach="fog" args={[fogColor, 0.085]} />
 
-      {/* Key — the only shadow caster, raking so the coil reads as coil */}
+      {/* Key — the only shadow caster. On a light set the cast shadow is the
+          main thing separating the object from the ground, so it stays firm. */}
       <directionalLight
         position={[-3.6, 4.4, 3.0]}
-        intensity={1.05}
-        color="#dfe4ff"
+        intensity={1.25 * SET_GAIN}
+        color="#fff6e8"
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.0003}
@@ -133,7 +153,14 @@ export function StageRig() {
         shadow-camera-bottom={-3.5}
       />
 
-      <hemisphereLight args={['#1b2450', '#04060E', 0.38]} />
+      {/*
+        A light set needs a genuine ambient floor, not just a key. Without it a
+        paper-albedo surface renders well below paper once tone-mapped, and the
+        lit ground visibly splits from the unlit backdrop. Dark filament is
+        barely lifted by this — ambient scales with albedo, so contrast holds.
+      */}
+      <ambientLight intensity={1.25 * SET_GAIN} color="#fffaf2" />
+      <hemisphereLight args={['#ffffff', '#cfc7b8', 0.55 * SET_GAIN]} />
 
       {/* Warm fill from below-front: lights the underside of every winding */}
       <pointLight

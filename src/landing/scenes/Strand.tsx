@@ -253,7 +253,7 @@ export function Strand({ data }: { data: StrandData }) {
       if (raycaster.ray.intersectPlane(touchPlane, tmpA)) {
         inverse.copy(mesh.matrixWorld).invert()
         uniforms.uTouch.value.copy(tmpA.applyMatrix4(inverse))
-        damp(uniforms.uTouchStrength, 'value', extruder.held ? 1.5 : 0.85, 0.4, dt)
+        damp(uniforms.uTouchStrength, 'value', extruder.held ? 0.9 : 0.4, 0.4, dt)
       }
     } else {
       uniforms.uTouchStrength.value = 0

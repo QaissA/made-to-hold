@@ -7,7 +7,7 @@
 .mth {
   position: relative;
   z-index: 1;
-  color: var(--bone);
+  color: var(--ink);
   font-family: var(--font-sans);
 }
 
@@ -24,8 +24,8 @@
   inset: 0;
   z-index: 60;
   pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
   background-repeat: repeat;
 }
 
@@ -36,8 +36,8 @@
   pointer-events: none;
   background: radial-gradient(
     ellipse 90% 75% at 50% 45%,
-    transparent 40%,
-    rgba(5, 7, 14, 0.55) 100%
+    transparent 45%,
+    rgba(var(--paper-rgb), 0.35) 100%
   );
 }
 
@@ -99,7 +99,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(5, 7, 14, 0.85), transparent);
+  background: linear-gradient(180deg, rgba(var(--paper-rgb), 0.85), transparent);
   pointer-events: none;
 }
 
@@ -112,7 +112,7 @@
   font-weight: 800;
   font-size: 0.92rem;
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--ink);
   text-decoration: none;
   transform: translate3d(var(--mx, 0), var(--my, 0), 0);
   transition: transform 0.4s var(--ease);
@@ -171,7 +171,7 @@
 }
 
 .nav__links a:hover {
-  color: var(--bone);
+  color: var(--ink);
 }
 
 .nav__links a:hover::after {
@@ -190,8 +190,8 @@
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
-  color: var(--bone);
-  background: rgba(9, 13, 26, 0.58);
+  color: var(--ink);
+  background: rgba(251, 248, 242, 0.58);
   border: 1px solid var(--line);
   backdrop-filter: blur(9px);
   pointer-events: none;
@@ -222,7 +222,7 @@
 }
 
 .gauge__val--hot {
-  color: var(--ember);
+  color: var(--ember-ink);
 }
 
 .gauge__spool {
@@ -238,14 +238,14 @@
   position: relative;
   flex: 1;
   height: 3px;
-  background: rgba(216, 224, 255, 0.14);
+  background: rgba(var(--ink-rgb), 0.14);
   overflow: hidden;
 }
 
 .gauge__spool-fill {
   position: absolute;
   inset: 0;
-  background: var(--bone);
+  background: var(--ink);
   transform-origin: left;
 }
 
@@ -259,11 +259,11 @@
   height: 4px;
   background: linear-gradient(
     90deg,
-    #fff2e2 0%,
-    var(--ember) 14%,
-    var(--amber) 32%,
-    #d8d2c6 58%,
-    #4238a8 100%
+    var(--ember) 0%,
+    #d2691e 26%,
+    #8a8794 55%,
+    #3a3b44 78%,
+    #1b1c26 100%
   );
 }
 
@@ -293,8 +293,8 @@
   font-size: 0.6rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bone);
-  background: rgba(9, 13, 26, 0.55);
+  color: var(--ink);
+  background: rgba(251, 248, 242, 0.55);
   border: 1px solid var(--line);
   backdrop-filter: blur(8px);
   pointer-events: none;
@@ -356,7 +356,7 @@ body.is-holding {
   position: relative;
   width: 1px;
   height: 26vh;
-  background: rgba(216, 224, 255, 0.16);
+  background: rgba(var(--ink-rgb), 0.16);
   overflow: hidden;
 }
 
@@ -381,7 +381,7 @@ body.is-holding {
   font-size: 0.66rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--bone);
+  color: var(--ink);
   writing-mode: vertical-rl;
   animation: rail-in 0.7s var(--ease) both;
 }
@@ -427,7 +427,7 @@ body.is-holding {
   width: 30px;
   height: 30px;
   margin: -15px 0 0 -15px;
-  border: 1px solid rgba(242, 237, 227, 0.45);
+  border: 1px solid rgba(var(--ink-rgb), 0.5);
   mix-blend-mode: difference;
 }
 
@@ -508,9 +508,9 @@ body.is-holding {
   pointer-events: none;
   background: radial-gradient(
     ellipse 62% 58% at 32% 50%,
-    rgba(5, 7, 14, 0.94) 0%,
-    rgba(5, 7, 14, 0.78) 44%,
-    rgba(5, 7, 14, 0) 76%
+    rgba(var(--paper-rgb), 0.94) 0%,
+    rgba(var(--paper-rgb), 0.78) 44%,
+    rgba(var(--paper-rgb), 0) 76%
   );
 }
 
@@ -518,9 +518,9 @@ body.is-holding {
   inset: -14% -40% -18% -28%;
   background: radial-gradient(
     ellipse 62% 58% at 68% 50%,
-    rgba(5, 7, 14, 0.94) 0%,
-    rgba(5, 7, 14, 0.78) 44%,
-    rgba(5, 7, 14, 0) 76%
+    rgba(var(--paper-rgb), 0.94) 0%,
+    rgba(var(--paper-rgb), 0.78) 44%,
+    rgba(var(--paper-rgb), 0) 76%
   );
 }
 
@@ -569,7 +569,7 @@ body.is-holding {
   font-size: clamp(2.9rem, 10vw, 8.5rem);
   line-height: 0.85;
   letter-spacing: -0.045em;
-  color: var(--bone);
+  color: var(--ink);
 }
 
 /* Split units are inline-blocks, so each line has to be held on one row. */
@@ -580,7 +580,7 @@ body.is-holding {
 
 .hero__title-line--alt .split__unit {
   color: transparent;
-  -webkit-text-stroke: 1.5px var(--bone);
+  -webkit-text-stroke: 1.5px var(--ink);
   transition:
     transform 1s var(--ease),
     opacity 0.6s var(--ease),
@@ -599,7 +599,7 @@ body.is-holding {
   font-family: var(--font-serif);
   font-size: clamp(1.1rem, 1.9vw, 1.5rem);
   line-height: 1.45;
-  color: rgba(242, 237, 227, 0.72);
+  color: rgba(var(--ink-rgb), 0.72);
 }
 
 .hero__actions {
@@ -641,7 +641,7 @@ body.is-holding {
   z-index: 1;
   background: repeating-linear-gradient(
     0deg,
-    rgba(5, 7, 14, 0.16) 0 1px,
+    rgba(var(--paper-rgb), 0.16) 0 1px,
     transparent 1px 4px
   );
   opacity: 0;
@@ -670,8 +670,8 @@ body.is-holding {
 }
 
 .btn--ghost {
-  color: var(--bone);
-  border: 1px solid rgba(242, 237, 227, 0.26);
+  color: var(--ink);
+  border: 1px solid rgba(var(--ink-rgb), 0.3);
 }
 
 .btn--ghost::after {
@@ -679,13 +679,13 @@ body.is-holding {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: var(--bone);
+  background: var(--ink);
   transform: translateY(101%);
   transition: transform 0.55s var(--ease);
 }
 
 .btn--ghost:hover {
-  color: var(--ink);
+  color: var(--paper);
 }
 
 .btn--ghost:hover::after {
@@ -713,7 +713,7 @@ body.is-holding {
   position: relative;
   width: 74px;
   height: 1px;
-  background: rgba(216, 224, 255, 0.2);
+  background: rgba(var(--ink-rgb), 0.2);
   overflow: hidden;
 }
 
@@ -761,8 +761,8 @@ body.is-holding {
 .kicker span {
   padding: 0.22rem 0.45rem;
   font-weight: 700;
-  color: var(--ink);
-  background: var(--muted);
+  color: var(--paper);
+  background: var(--ink);
 }
 
 .kicker--hot span {
@@ -774,8 +774,8 @@ body.is-holding {
 }
 
 .kicker--cold span {
-  background: var(--majorelle-bright);
-  color: var(--bone);
+  background: var(--majorelle);
+  color: var(--paper);
 }
 
 .display {
@@ -785,7 +785,7 @@ body.is-holding {
   font-size: clamp(2.1rem, 5.4vw, 4.4rem);
   line-height: 1.02;
   letter-spacing: -0.035em;
-  color: var(--bone);
+  color: var(--ink);
 }
 
 .display--tight {
@@ -799,7 +799,7 @@ body.is-holding {
   max-width: 46rem;
   font-size: 1rem;
   line-height: 1.68;
-  color: rgba(242, 237, 227, 0.62);
+  color: rgba(var(--ink-rgb), 0.62);
 }
 
 @media (min-width: 900px) {
@@ -829,9 +829,9 @@ body.is-holding {
   background: linear-gradient(
     180deg,
     transparent,
-    rgba(5, 7, 14, 0.72) 12%,
-    rgba(5, 7, 14, 0.86) 50%,
-    rgba(5, 7, 14, 0.72) 88%,
+    rgba(var(--paper-rgb), 0.72) 12%,
+    rgba(var(--paper-rgb), 0.86) 50%,
+    rgba(var(--paper-rgb), 0.72) 88%,
     transparent
   );
 }
@@ -889,7 +889,7 @@ body.is-holding {
   font-size: clamp(2.3rem, 5.6vw, 4.6rem);
   line-height: 0.98;
   letter-spacing: -0.038em;
-  color: var(--bone);
+  color: var(--ink);
 }
 
 .product__copy {
@@ -897,7 +897,7 @@ body.is-holding {
   font-family: var(--font-serif);
   font-size: clamp(1.02rem, 1.45vw, 1.24rem);
   line-height: 1.55;
-  color: rgba(242, 237, 227, 0.66);
+  color: rgba(var(--ink-rgb), 0.66);
 }
 
 .spec {
@@ -926,14 +926,14 @@ body.is-holding {
 .spec dd {
   margin: 0;
   font-size: 0.9rem;
-  color: rgba(242, 237, 227, 0.86);
+  color: rgba(var(--ink-rgb), 0.86);
 }
 
 .spec__price {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.05rem;
-  color: var(--ember);
+  color: var(--ember-ink);
 }
 
 /* ——— steps ————————————————————————————————— */
@@ -998,7 +998,7 @@ body.is-holding {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.2em;
-  color: var(--ember);
+  color: var(--ember-ink);
 }
 
 .step__t {
@@ -1007,7 +1007,7 @@ body.is-holding {
   font-weight: 700;
   font-size: 1.35rem;
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--ink);
 }
 
 .step__d {
@@ -1060,7 +1060,7 @@ body.is-holding {
   position: relative;
   height: 100%;
   padding: 1.6rem 1.4rem 1.5rem;
-  background: rgba(13, 18, 36, 0.86);
+  background: rgba(251, 248, 242, 0.86);
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   transform-style: preserve-3d;
   transition: transform 0.4s var(--ease);
@@ -1088,7 +1088,7 @@ body.is-holding {
   font-family: var(--font-mono);
   font-size: 0.6rem;
   letter-spacing: 0.22em;
-  color: var(--majorelle-bright);
+  color: var(--majorelle);
 }
 
 .card__t {
@@ -1097,7 +1097,7 @@ body.is-holding {
   font-weight: 700;
   font-size: 1.28rem;
   letter-spacing: -0.015em;
-  color: var(--bone);
+  color: var(--ink);
 }
 
 .card__d {
@@ -1112,7 +1112,7 @@ body.is-holding {
   left: 1.4rem;
   bottom: 1.3rem;
   font-size: 0.95rem;
-  color: var(--ember);
+  color: var(--ember-ink);
   transform: translateX(-6px);
   opacity: 0;
   transition:
@@ -1134,7 +1134,7 @@ body.is-holding {
   padding: 1.1rem 0;
   border-top: 1px solid var(--line-soft);
   border-bottom: 1px solid var(--line-soft);
-  background: rgba(5, 7, 14, 0.68);
+  background: rgba(var(--paper-rgb), 0.68);
   backdrop-filter: blur(4px);
 }
 
@@ -1158,13 +1158,13 @@ body.is-holding {
   font-weight: 700;
   font-size: clamp(1.15rem, 2.4vw, 2rem);
   letter-spacing: -0.02em;
-  color: rgba(242, 237, 227, 0.82);
+  color: rgba(var(--ink-rgb), 0.82);
   white-space: nowrap;
   padding: 0 1.3rem;
 }
 
 .marquee__sep {
-  color: var(--ember);
+  color: var(--ember-ink);
   font-size: 0.55rem;
   padding: 0 0.4rem;
 }
@@ -1198,7 +1198,7 @@ body.is-holding {
   font-size: clamp(2.9rem, 8.5vw, 7rem);
   line-height: 0.88;
   letter-spacing: -0.045em;
-  color: var(--bone);
+  color: var(--ink);
 }
 
 .close__copy {
@@ -1207,7 +1207,7 @@ body.is-holding {
   font-family: var(--font-serif);
   font-size: clamp(1.05rem, 1.5vw, 1.3rem);
   line-height: 1.5;
-  color: rgba(242, 237, 227, 0.66);
+  color: rgba(var(--ink-rgb), 0.66);
 }
 
 .tally {
@@ -1223,7 +1223,7 @@ body.is-holding {
   font-size: clamp(2.6rem, 6vw, 4.6rem);
   line-height: 1;
   letter-spacing: -0.04em;
-  color: var(--ember);
+  color: var(--ember-ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1245,7 +1245,7 @@ body.is-holding {
   gap: 1.5rem;
   /* Deep bottom padding keeps the last row clear of the fixed spool gauge. */
   padding: clamp(2.5rem, 6vh, 4rem) clamp(1.5rem, 6vw, 6.5rem) 10rem;
-  background: var(--ink);
+  background: var(--paper);
   border-top: 1px solid var(--line-soft);
   font-size: 0.78rem;
   color: var(--muted);
@@ -1282,12 +1282,12 @@ body.is-holding {
 .foot__brand {
   font-family: var(--font-display);
   font-weight: 800;
-  color: var(--bone);
+  color: var(--ink);
 }
 
 .foot__ar {
   font-size: 0.95rem;
-  color: var(--amber);
+  color: var(--amber-ink);
 }
 
 .foot a {
@@ -1297,7 +1297,7 @@ body.is-holding {
 }
 
 .foot a:hover {
-  color: var(--bone);
+  color: var(--ink);
 }
 
 /* ——— overture ————————————————————————————————— */
@@ -1309,7 +1309,7 @@ body.is-holding {
   display: grid;
   place-items: center;
   padding: 2rem;
-  background: var(--ink);
+  background: var(--paper);
   transition:
     transform 0.9s var(--ease-in-out),
     opacity 0.7s var(--ease);
@@ -1339,13 +1339,13 @@ body.is-holding {
 
 .overture__ghost {
   color: transparent;
-  -webkit-text-stroke: 1px rgba(242, 237, 227, 0.16);
+  -webkit-text-stroke: 1px rgba(var(--ink-rgb), 0.2);
 }
 
 .overture__fill {
   position: absolute;
   inset: 0;
-  color: var(--bone);
+  color: var(--ink);
 }
 
 .overture__line {
@@ -1378,7 +1378,7 @@ body.is-holding {
 }
 
 .overture__count {
-  color: var(--bone);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1386,7 +1386,7 @@ body.is-holding {
   position: relative;
   height: 1px;
   margin-top: 0.85rem;
-  background: rgba(216, 224, 255, 0.16);
+  background: rgba(var(--ink-rgb), 0.16);
   overflow: hidden;
 }
 
@@ -1438,9 +1438,9 @@ body.is-holding {
     inset: -14% -28% -18% -40%;
     background: radial-gradient(
       ellipse 62% 58% at 32% 50%,
-      rgba(5, 7, 14, 0.94) 0%,
-      rgba(5, 7, 14, 0.78) 44%,
-      rgba(5, 7, 14, 0) 76%
+      rgba(var(--paper-rgb), 0.94) 0%,
+      rgba(var(--paper-rgb), 0.78) 44%,
+      rgba(var(--paper-rgb), 0) 76%
     );
   }
 
