@@ -33,22 +33,54 @@ function createStarShape(outer = 0.42, inner = 0.18, points = 8) {
   return shape
 }
 
+function terrainHeight(x: number, z: number): number {
+  // Soft hills + a valley corridor the route rides through
+  const hills =
+    0.1 * Math.sin(x * 2.1) * Math.cos(z * 1.7) +
+    0.055 * Math.sin(x * 3.8 + z * 2.4) +
+    0.04 * Math.cos(x * 5.2 - z * 1.3)
+  const bowl = -0.04 * Math.exp(-(x * x * 0.8 + (z - 0.1) * (z - 0.1) * 1.2))
+  return Math.max(0.02, 0.18 + hills + bowl)
+}
+
+function createTerrainGeometry(size = 1.55, segments = 64) {
+  const geo = new THREE.PlaneGeometry(size, size, segments, segments)
+  geo.rotateX(-Math.PI / 2)
+  const pos = geo.attributes.position
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i)
+    const z = pos.getZ(i)
+    pos.setY(i, terrainHeight(x, z))
+  }
+  pos.needsUpdate = true
+  geo.computeVertexNormals()
+  return geo
+}
+
+/** Route polyline in XZ; Y = terrain + relief lift (the printed object). */
 function createRibbonGeometry() {
-  const curve = new THREE.CatmullRomCurve3(
-    [
-      new THREE.Vector3(-0.7, 0.05, 0.45),
-      new THREE.Vector3(-0.35, 0.28, -0.1),
-      new THREE.Vector3(-0.05, 0.55, 0.35),
-      new THREE.Vector3(0.28, 0.38, -0.2),
-      new THREE.Vector3(0.55, 0.72, 0.25),
-      new THREE.Vector3(0.85, 0.95, -0.05),
-      new THREE.Vector3(1.05, 1.15, 0.18),
-    ],
-    false,
-    'catmullrom',
-    0.35,
-  )
-  return new THREE.TubeGeometry(curve, 160, 0.032, 12, false)
+  const xz: [number, number][] = [
+    [-0.55, 0.48],
+    [-0.28, 0.12],
+    [-0.02, 0.38],
+    [0.22, -0.08],
+    [0.42, 0.22],
+    [0.58, -0.05],
+    [0.68, 0.18],
+  ]
+  const points = xz.map(([x, z], i) => {
+    const relief = 0.04 + (i / (xz.length - 1)) * 0.22
+    return new THREE.Vector3(x, terrainHeight(x, z) + relief, z)
+  })
+  const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.35)
+  return new THREE.TubeGeometry(curve, 160, 0.028, 10, false)
+}
+
+/** Low skirt / plinth under the terrain tile */
+function createTerrainSkirt(size = 1.55, depth = 0.08) {
+  const geo = new THREE.BoxGeometry(size, depth, size)
+  geo.translate(0, -depth / 2, 0)
+  return geo
 }
 
 /** Soft portrait-like height/emissive map for the lithophane stand-in */
@@ -124,6 +156,8 @@ export function HeroTrio({ scrollProgressRef }: Props) {
   const clippingPlanes = useMemo(() => [clipPlane], [clipPlane])
 
   const ribbonGeo = useMemo(() => createRibbonGeometry(), [])
+  const terrainGeo = useMemo(() => createTerrainGeometry(), [])
+  const skirtGeo = useMemo(() => createTerrainSkirt(), [])
   const starGeo = useMemo(() => {
     const shape = createStarShape(0.4, 0.16, 8)
     return new THREE.ExtrudeGeometry(shape, {
@@ -140,11 +174,13 @@ export function HeroTrio({ scrollProgressRef }: Props) {
   useEffect(() => {
     return () => {
       ribbonGeo.dispose()
+      terrainGeo.dispose()
+      skirtGeo.dispose()
       starGeo.dispose()
       lithoMaps.map.dispose()
       lithoMaps.displacementMap.dispose()
     }
-  }, [ribbonGeo, starGeo, lithoMaps])
+  }, [ribbonGeo, terrainGeo, skirtGeo, starGeo, lithoMaps])
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05)
@@ -207,7 +243,7 @@ export function HeroTrio({ scrollProgressRef }: Props) {
         </group>
 
         {/* Zellij extruded star */}
-        <group position={[0.05, 0.55, 0]} rotation={[-Math.PI / 2, 0, 0.15]}>
+        <group position={[-0.05, 0.55, 0.15]} rotation={[-Math.PI / 2, 0, 0.15]}>
           <mesh castShadow receiveShadow geometry={starGeo}>
             <meshStandardMaterial
               color={PALETTE.majorelle}
@@ -233,21 +269,41 @@ export function HeroTrio({ scrollProgressRef }: Props) {
           </mesh>
         </group>
 
-        {/* Strava ribbon relief */}
-        <mesh
-          castShadow
-          geometry={ribbonGeo}
-          position={[0.05, 0.02, 0.12]}
-          rotation={[0, -0.2, 0]}
-        >
-          <meshStandardMaterial
-            color={PALETTE.saffron}
-            roughness={0.82}
-            metalness={0.02}
-            clippingPlanes={clippingPlanes}
-            clipShadows
-          />
-        </mesh>
+        {/* Strava relief + surrounding terrain tile */}
+        <group position={[0.72, 0.02, 0.05]} rotation={[0, -0.35, 0]} scale={0.92}>
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={skirtGeo}
+          >
+            <meshStandardMaterial
+              color="#3a342c"
+              roughness={0.92}
+              clippingPlanes={clippingPlanes}
+              clipShadows
+            />
+          </mesh>
+          <mesh castShadow receiveShadow geometry={terrainGeo}>
+            <meshStandardMaterial
+              color="#5c6b4a"
+              roughness={0.9}
+              metalness={0.02}
+              clippingPlanes={clippingPlanes}
+              clipShadows
+            />
+          </mesh>
+          <mesh castShadow geometry={ribbonGeo}>
+            <meshStandardMaterial
+              color={PALETTE.saffron}
+              roughness={0.78}
+              metalness={0.04}
+              emissive={PALETTE.saffron}
+              emissiveIntensity={0.08}
+              clippingPlanes={clippingPlanes}
+              clipShadows
+            />
+          </mesh>
+        </group>
       </group>
     </group>
   )
