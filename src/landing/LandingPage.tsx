@@ -35,12 +35,12 @@ export function LandingPage() {
       style={{
         position: 'relative',
         width: '100%',
-        minHeight: '120vh',
+        minHeight: '180vh',
         background: 'var(--bg)',
         color: 'var(--bone)',
       }}
     >
-      {/* Sticky hero plane — P1 is a single 100vh act; spacer below keeps Lenis alive */}
+      {/* Sticky hero — longer page so Lenis progress / parallax isn't abrupt */}
       <div
         style={{
           position: 'sticky',
@@ -48,6 +48,7 @@ export function LandingPage() {
           width: '100%',
           height: '100vh',
           overflow: 'hidden',
+          touchAction: 'pan-y',
         }}
       >
         <Hero
@@ -137,8 +138,7 @@ export function LandingPage() {
         />
       </div>
 
-      {/* Extra scroll room so Lenis isn't a no-op on a 100vh hero */}
-      <div style={{ height: '20vh' }} aria-hidden />
+      <div style={{ height: '80vh' }} aria-hidden />
     </div>
   )
 }

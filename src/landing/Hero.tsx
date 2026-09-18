@@ -1,6 +1,5 @@
 import { OrbitControls, useProgress } from '@react-three/drei'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { damp } from 'maath/easing'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Suspense, useEffect, type RefObject } from 'react'
 import { ContactShadowGround } from '../canvas/ContactShadowGround'
 import { Lighting } from '../canvas/Lighting'
@@ -18,10 +17,6 @@ import {
 } from '../config/lightUnits'
 import { PALETTE } from '../config/palette'
 import { HeroTrio } from './scenes/HeroTrio'
-
-const CAMERA_Y0 = 1.4
-const SCROLL_NUDGE_Y = 0.35
-const NUDGE_SMOOTH_TIME = 0.4
 
 /** Landing studio lights — no reflector floor; area off for a lighter hero. */
 export const HERO_LIGHT_FLAGS: LightFlags = {
@@ -56,28 +51,10 @@ function ProgressBridge({ onProgress }: { onProgress?: (p: number) => void }) {
 
   useEffect(() => {
     if (!onProgress) return
-    // drei: progress is 0–100; loaded/total are item counts (not a boolean).
     const finished =
       (!active && total > 0 && loaded >= total) || progress >= 100
     onProgress(finished ? 1 : progress / 100)
   }, [progress, active, loaded, total, onProgress])
-
-  return null
-}
-
-/** Stub: damp camera Y up to ~0.35 as Lenis scroll progress 0→1. */
-function CameraNudge({
-  scrollProgressRef,
-}: {
-  scrollProgressRef?: RefObject<number>
-}) {
-  const { camera } = useThree()
-
-  useFrame((_, delta) => {
-    const p = scrollProgressRef?.current ?? 0
-    const targetY = CAMERA_Y0 + Math.min(1, Math.max(0, p)) * SCROLL_NUDGE_Y
-    damp(camera.position, 'y', targetY, NUDGE_SMOOTH_TIME, delta)
-  })
 
   return null
 }
@@ -95,7 +72,7 @@ export function Hero({ onProgress, scrollProgressRef }: HeroProps) {
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera={{ position: [2.2, CAMERA_Y0, 3.2], fov: 40 }}
+      camera={{ position: [2.4, 1.55, 3.4], fov: 38 }}
       gl={{
         antialias: true,
         toneMapping: TONE_MAP_PRESETS[DEFAULT_TONE_MAP],
@@ -111,12 +88,33 @@ export function Hero({ onProgress, scrollProgressRef }: HeroProps) {
       <color attach="background" args={[PALETTE.bg]} />
       <Suspense fallback={null}>
         <Lighting flags={HERO_LIGHT_FLAGS} />
-        <HeroTrio />
+        {/* Soft backlight for lithophane transmission */}
+        <pointLight
+          position={[-1.15, 0.55, -0.55]}
+          intensity={4.5}
+          color={PALETTE.saffron}
+          distance={4}
+          decay={2}
+        />
+        <HeroTrio scrollProgressRef={scrollProgressRef} />
         {HERO_LIGHT_FLAGS.contactShadows && <ContactShadowGround />}
       </Suspense>
       <PostFX flags={HERO_LIGHT_FLAGS} toneMap={DEFAULT_TONE_MAP} />
-      <OrbitControls enableDamping makeDefault />
-      <CameraNudge scrollProgressRef={scrollProgressRef} />
+      {/*
+        Wheel zoom + camera Y nudge fought Lenis scroll → glitchy hero.
+        Orbit is drag-only; parallax lives on the trio group, not the camera.
+      */}
+      <OrbitControls
+        makeDefault
+        enableDamping
+        dampingFactor={0.06}
+        enableZoom={false}
+        enablePan={false}
+        rotateSpeed={0.55}
+        minPolarAngle={Math.PI * 0.28}
+        maxPolarAngle={Math.PI * 0.48}
+        target={[0, 0.55, 0]}
+      />
       <ProgressBridge onProgress={onProgress} />
     </Canvas>
   )

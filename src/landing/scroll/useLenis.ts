@@ -6,7 +6,13 @@ export function useLenis(): Lenis | null {
   const [lenis, setLenis] = useState<Lenis | null>(null)
 
   useEffect(() => {
-    const instance = new Lenis()
+    const instance = new Lenis({
+      // Heavier, deliberate scroll — matches materialization language
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.1,
+    })
     setLenis(instance)
 
     let rafId = 0
