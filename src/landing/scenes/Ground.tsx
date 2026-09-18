@@ -14,11 +14,11 @@ function ringTexture(): THREE.CanvasTexture {
   canvas.width = canvas.height = size
   const ctx = canvas.getContext('2d')!
 
-  ctx.fillStyle = '#050508'
+  ctx.fillStyle = '#04060E'
   ctx.fillRect(0, 0, size, size)
 
   const c = size / 2
-  ctx.strokeStyle = 'rgba(160,168,210,0.09)'
+  ctx.strokeStyle = 'rgba(150,170,255,0.10)'
   for (let r = 14; r < c; r += 14) {
     ctx.lineWidth = r % 112 === 0 ? 2.2 : 0.8
     ctx.beginPath()
@@ -28,8 +28,8 @@ function ringTexture(): THREE.CanvasTexture {
 
   // Fade the rings out toward the edge so the plane dissolves into fog.
   const fade = ctx.createRadialGradient(c, c, size * 0.12, c, c, size * 0.5)
-  fade.addColorStop(0, 'rgba(5,5,8,0)')
-  fade.addColorStop(1, 'rgba(5,5,8,1)')
+  fade.addColorStop(0, 'rgba(4,6,14,0)')
+  fade.addColorStop(1, 'rgba(4,6,14,1)')
   ctx.fillStyle = fade
   ctx.fillRect(0, 0, size, size)
 
@@ -39,13 +39,28 @@ function ringTexture(): THREE.CanvasTexture {
   return tex
 }
 
+/** Plane size, and the span the ring pattern actually covers within it. */
+const GROUND_SIZE = 150
+const RING_SPAN = 24
+
 export function Ground() {
-  const map = useMemo(ringTexture, [])
+  const map = useMemo(() => {
+    const tex = ringTexture()
+    // The plane has to run far past the fog's reach, otherwise its far edge
+    // silhouettes against the backdrop as a hard horizon line. The rings stay
+    // sized to the subject; everything beyond clamps to the texture's own
+    // faded black edge.
+    const repeat = GROUND_SIZE / RING_SPAN
+    tex.repeat.set(repeat, repeat)
+    tex.offset.set((1 - repeat) / 2, (1 - repeat) / 2)
+    return tex
+  }, [])
+
   useEffect(() => () => map.dispose(), [map])
 
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.15, 0]} receiveShadow>
-      <planeGeometry args={[34, 34]} />
+      <planeGeometry args={[GROUND_SIZE, GROUND_SIZE]} />
       <meshStandardMaterial
         map={map}
         color={PALETTE.ink}

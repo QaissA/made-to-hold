@@ -16,8 +16,8 @@ import {
   OUTPUT_COLOR_SPACE,
   TONE_MAP_PRESETS,
 } from '../config/color'
-import { PALETTE } from '../config/palette'
 import { buildStrandData } from './filament/strandData'
+import { Backdrop } from './scenes/Backdrop'
 import { Ground } from './scenes/Ground'
 import { StageRig } from './scenes/StageRig'
 import { Strand } from './scenes/Strand'
@@ -55,6 +55,7 @@ function Stage() {
 
   return (
     <>
+      <Backdrop />
       <Environment files="/hdri/studio.hdr" environmentIntensity={0.3} />
       <StageRig />
       <Ground />
@@ -105,7 +106,6 @@ export function StageCanvas({ onProgress }: StageCanvasProps) {
       style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}
     >
       <ToneMappingApplier />
-      <color attach="background" args={[PALETTE.ink]} />
       <Suspense fallback={null}>
         <Stage />
       </Suspense>

@@ -6,10 +6,10 @@
  * temperature: the site is a machine that is currently printing.
  */
 export const PALETTE = {
-  /** Base canvas / 3D backdrop */
-  ink: '#07070A',
-  /** Raised plaster panels */
-  inkRaised: '#111019',
+  /** Base canvas — a cool blue-black, so warm filament always reads warm */
+  ink: '#05070E',
+  /** Raised panels */
+  inkRaised: '#0D1120',
   /** Structural accent — zellij, frame, cold light */
   majorelle: '#3B2FE8',
   majorelleBright: '#6B5BFF',
@@ -23,6 +23,18 @@ export const PALETTE = {
   bone: '#F2EDE3',
   /** Secondary text */
   muted: '#8E8A9C',
+} as const
+
+/**
+ * The 3D atmosphere. Cold indigo so the ember strand has something to
+ * separate from; the scene fog matches `horizon` so the ground dissolves
+ * into the backdrop instead of ending at a visible edge.
+ */
+export const BACKDROP = {
+  zenith: '#03040A',
+  horizon: '#090D22',
+  floor: '#020308',
+  glow: '#1A2358',
 } as const
 
 /** Per-act accent, used by both DOM and 3D. */

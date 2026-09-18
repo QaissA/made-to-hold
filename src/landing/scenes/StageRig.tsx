@@ -1,7 +1,7 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { PALETTE } from '../../config/palette'
+import { BACKDROP, PALETTE } from '../../config/palette'
 import { stage, type ActId } from '../scroll/stage'
 import { extruder } from './strandState'
 
@@ -113,7 +113,8 @@ export function StageRig() {
 
   return (
     <>
-      <fogExp2 attach="fog" args={[PALETTE.ink, 0.115]} />
+      {/* Matches the backdrop horizon so the ground has no visible edge. */}
+      <fogExp2 attach="fog" args={[BACKDROP.horizon, 0.115]} />
 
       {/* Key — the only shadow caster, raking so the coil reads as coil */}
       <directionalLight
@@ -132,7 +133,7 @@ export function StageRig() {
         shadow-camera-bottom={-3.5}
       />
 
-      <hemisphereLight args={['#201c38', '#050408', 0.35]} />
+      <hemisphereLight args={['#1b2450', '#04060E', 0.38]} />
 
       {/* Warm fill from below-front: lights the underside of every winding */}
       <pointLight
