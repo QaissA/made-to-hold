@@ -99,8 +99,13 @@ export function ProductStage({ portrait }: { portrait: THREE.Texture }) {
     const dt = Math.min(delta, 0.05)
 
     ORDER.forEach((id) => {
-      const target = !stage.started ? 0 : stage.product === id ? 1 : 0
-      damp(reveal[id], 'current', target, stage.reduced ? 0.1 : 0.42, dt)
+      const incoming = stage.started && stage.product === id
+      const target = incoming ? 1 : 0
+      // Asymmetric on purpose: the outgoing product leaves quickly so the
+      // stage is clear before the next one lands, which is what stops a fast
+      // scroll from catching two products in the same frame.
+      const smoothing = stage.reduced ? 0.08 : incoming ? 0.4 : 0.13
+      damp(reveal[id], 'current', target, smoothing, dt)
     })
 
     // Mount/unmount only on threshold crossings.
@@ -189,9 +194,12 @@ function Slot({
     const v = reveal.current
     group.visible = v > MOUNT_THRESHOLD
     if (!group.visible) return
+    // Scale runs most of the way to zero rather than bottoming out at half
+    // size: a product that only shrinks a little is still a large object
+    // sitting in the middle of the next act's shot.
     const eased = 1 - (1 - v) ** 2
-    group.position.y = (1 - eased) * -1.6
-    group.scale.setScalar(0.55 + eased * 0.45)
+    group.position.y = (1 - eased) * -2.4
+    group.scale.setScalar(0.08 + eased * 0.92)
   })
 
   if (!mounted.includes(id)) return null

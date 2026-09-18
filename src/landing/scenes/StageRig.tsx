@@ -12,33 +12,24 @@ type Key = {
   lateral: number
 }
 
-const ORDER: ActId[] = [
-  'hero',
-  'manifesto',
-  'effort',
-  'light',
-  'heritage',
-  'craft',
-  'yours',
-]
-
 /**
- * The shot list. Each form is framed for what it actually is: the vase in
- * three-quarter, the route from low and along its length, the portrait spiral
- * dead-on (it only resolves face-first), the knot from above.
+ * The shot list — one shot per act, framed for the product that act holds.
+ * The machine in three-quarter, the route low and along its length, the
+ * lithophane square to camera because that is the only angle it reads from,
+ * the puzzle from above because zellij is a pattern before it is an object.
  */
 const KEYS: Record<ActId, Key> = {
-  overture: { pos: [2.1, 1.05, 4.2], target: [0, 0.22, 0], lateral: 0 },
-  hero: { pos: [2.1, 1.05, 4.2], target: [0, 0.22, 0], lateral: -1.3 },
-  manifesto: { pos: [0.4, 3.0, 4.1], target: [0, -0.1, 0], lateral: 0.35 },
+  overture: { pos: [2.2, 1.35, 4.9], target: [0, 0.4, 0], lateral: 0 },
+  hero: { pos: [2.2, 1.35, 4.9], target: [0, 0.4, 0], lateral: -1.35 },
+  manifesto: { pos: [0.5, 3.2, 4.6], target: [0, 0.3, 0], lateral: 0.4 },
   // Down at the horizon and along the run, so elevation reads as elevation.
-  effort: { pos: [1.3, 0.85, 3.1], target: [0, 0.05, 0], lateral: -1.55 },
+  effort: { pos: [1.3, 0.85, 3.1], target: [0, 0.05, 0], lateral: -1.2 },
   // The spiral portrait is a flat coil — anything but head-on is noise.
-  light: { pos: [0.1, 0.35, 2.75], target: [0, 0.05, 0], lateral: 1.15 },
+  light: { pos: [0.1, 0.45, 2.85], target: [0, 0.12, 0], lateral: 1.1 },
   // Pattern before object.
   heritage: { pos: [0.2, 2.45, 2.05], target: [0, 0, 0], lateral: -0.15 },
-  craft: { pos: [3.0, 1.6, 3.3], target: [0, 0.15, 0], lateral: -0.9 },
-  yours: { pos: [1.3, 1.5, 3.6], target: [0, 0.05, 0], lateral: -0.5 },
+  craft: { pos: [3.0, 1.9, 3.9], target: [0, 0.4, 0], lateral: -0.95 },
+  yours: { pos: [1.6, 1.6, 4.6], target: [0, 0.4, 0], lateral: -0.55 },
 }
 
 /**
@@ -52,10 +43,10 @@ const KEYS: Record<ActId, Key> = {
  */
 export const SET_GAIN = 1
 
-function easeInOut(t: number) {
-  const x = t < 0 ? 0 : t > 1 ? 1 : t
-  return x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2
-}
+/** How far each shot pushes in across its own section. */
+const DRIFT_DOLLY = 0.5
+/** And how far it rises. */
+const DRIFT_RISE = 0.14
 
 export function StageRig() {
   const { camera } = useThree()
@@ -64,7 +55,7 @@ export function StageRig() {
   const target = useMemo(() => new THREE.Vector3(), [])
   const right = useMemo(() => new THREE.Vector3(), [])
   const up = useMemo(() => new THREE.Vector3(0, 1, 0), [])
-  const tmp = useMemo(() => new THREE.Vector3(), [])
+  const forward = useMemo(() => new THREE.Vector3(), [])
 
   // A Color can hold values above 1; fog is applied pre-tone-map, so it has to
   // sit at the same exposure as everything else or the horizon splits.
@@ -79,26 +70,37 @@ export function StageRig() {
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05)
-    const smooth = 1 - Math.exp(-dt * (stage.reduced ? 12 : 2.4))
+    // Deliberately slower than the product swap, so the shot settles onto
+    // whatever has just arrived instead of racing ahead of it.
+    const smooth = 1 - Math.exp(-dt * (stage.reduced ? 12 : 1.7))
 
     const actId = stage.actId === 'overture' ? 'hero' : stage.actId
-    const i = Math.max(0, ORDER.indexOf(actId))
-    const a = KEYS[ORDER[i]]
-    const b = KEYS[ORDER[Math.min(i + 1, ORDER.length - 1)]]
-    const k = easeInOut(stage.actLocal)
+    const key = KEYS[actId]
 
-    const px = a.pos[0] + (b.pos[0] - a.pos[0]) * k
-    const py = a.pos[1] + (b.pos[1] - a.pos[1]) * k
-    const pz = a.pos[2] + (b.pos[2] - a.pos[2]) * k
-    const tx = a.target[0] + (b.target[0] - a.target[0]) * k
-    const ty = a.target[1] + (b.target[1] - a.target[1]) * k
-    const tz = a.target[2] + (b.target[2] - a.target[2]) * k
-    const lateral = a.lateral + (b.lateral - a.lateral) * k
+    // Each act owns its shot outright. It used to interpolate toward the NEXT
+    // act's keyframe across the section, which meant that by the bottom of a
+    // section the camera had already arrived at the following shot while the
+    // previous product was still on stage — the framing and the object
+    // disagreed, and the whole thing read as confused.
+    let px = key.pos[0]
+    let py = key.pos[1]
+    let pz = key.pos[2]
+    const tx = key.target[0]
+    const ty = key.target[1]
+    const tz = key.target[2]
+    const lateral = key.lateral
 
-    // Lateral dolly: shift camera and target together along the view's right
-    // axis, sliding the object across the frame without re-aiming it.
-    tmp.set(tx - px, ty - py, tz - pz)
-    right.copy(tmp).cross(up).normalize()
+    forward.set(tx - px, ty - py, tz - pz)
+    right.copy(forward).cross(up).normalize()
+    forward.normalize()
+
+    // Scrolling still moves the camera: each shot pushes slowly in and rises
+    // across its own section. The move that matters — act to act — is left to
+    // the damped lerp below, so it happens exactly when the product swaps.
+    const drift = stage.actLocal - 0.5
+    px += forward.x * drift * DRIFT_DOLLY
+    py += forward.y * drift * DRIFT_DOLLY + drift * DRIFT_RISE
+    pz += forward.z * drift * DRIFT_DOLLY
 
     const breathe = stage.reduced
       ? 0
@@ -119,7 +121,7 @@ export function StageRig() {
     camera.position.lerp(pos, smooth)
     camera.lookAt(target)
 
-    // The portrait needs warm raking light; the knot needs cold structure.
+    // The lithophane needs warm raking light; the zellij needs cold structure.
     const warmTarget = actId === 'light' ? 1 : 0.15
     const coldTarget = actId === 'heritage' ? 1 : 0.2
     lit.current.warm += (warmTarget - lit.current.warm) * Math.min(1, dt * 2.2)
@@ -162,7 +164,7 @@ export function StageRig() {
       <ambientLight intensity={0.72 * SET_GAIN} color="#fffaf2" />
       <hemisphereLight args={['#ffffff', '#cfc7b8', 0.55 * SET_GAIN]} />
 
-      {/* Warm fill from below-front: lights the underside of every winding */}
+      {/* Warm fill from below-front: lifts the underside of every product */}
       <pointLight
         ref={warm}
         position={[1.4, -0.9, 2.6]}
@@ -172,7 +174,7 @@ export function StageRig() {
         decay={2}
       />
 
-      {/* Cold rim from behind: separates the strand from the void */}
+      {/* Cold rim from behind: separates the product from the backdrop */}
       <pointLight
         ref={cold}
         position={[-2.4, 1.6, -2.6]}

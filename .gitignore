@@ -1,5 +1,6 @@
 # Existing
 .worktrees/
+.vendor/
 
 # Vite / Node
 # Logs
@@ -26,3 +27,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.vercel

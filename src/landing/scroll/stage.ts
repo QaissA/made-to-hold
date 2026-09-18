@@ -75,7 +75,7 @@ export const ACTS: Record<ActId, { word: string; product: ProductId }> = {
   light: { word: 'Light', product: 'lithophane' },
   heritage: { word: 'Heritage', product: 'zellij' },
   craft: { word: 'Craft', product: 'printer' },
-  yours: { word: 'Yours', product: 'zellij' },
+  yours: { word: 'Yours', product: 'printer' },
 }
 
 export function clamp01(v: number): number {

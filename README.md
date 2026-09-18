@@ -24,6 +24,7 @@ Optional:
 |---|---|
 | [Project overview](docs/architecture/project-overview.md) | Architecture summary + use potential |
 | [Made to Hold landing](docs/playbooks/landing-page.md) | Landing creative + build playbook |
+| [Three.js skills](docs/reference/threejs-skills.md) | Project `threejs-*` agent skills |
 | [Architecture (canon)](docs/architecture/eevee-parity.md) | Full parity map, gaps, phases |
 | [Color foundation](docs/playbooks/color-foundation.md) | First setup / “looks wrong vs Blender” |
 | [Lighting & shadows](docs/playbooks/lighting-shadows.md) | Lights, area-light proxies, shadow quality |
