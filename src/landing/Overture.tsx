@@ -1,76 +1,37 @@
 import { useEffect, useRef, useState } from 'react'
+import { LAYER_TOTAL } from './scroll/stage'
 
-const MIN_MS = 800
-const READY_HOLD_MS = 700
-const FADE_MS = 450
-const DONE_THRESHOLD = 0.99
+const MIN_MS = 1500
+const READY_HOLD_MS = 620
+const EXIT_MS = 900
+const DONE = 0.995
 
-type Phase = 'loading' | 'ready' | 'out'
+type Phase = 'printing' | 'ready' | 'exit' | 'gone'
 
 export type OvertureProps = {
-  /** Real load progress 0–1 from parent / hero */
+  /** Real asset progress, 0-1. */
   progress: number
   onDone: () => void
 }
 
-const TILE_COLORS = [
-  'var(--majorelle)',
-  'var(--saffron)',
-  'var(--terracotta)',
-  'var(--majorelle)',
-  'var(--saffron)',
-  'var(--terracotta)',
-  'var(--saffron)',
-  'var(--majorelle)',
-  'var(--terracotta)',
-] as const
+const LOG = [
+  'heating nozzle',
+  'levelling bed',
+  'loading filament',
+  'slicing geometry',
+  'priming line',
+]
 
-/** 3×3 diamond lattice — zellij-adjacent, 9 tiles. */
-function ZellijGrid({ display }: { display: number }) {
-  const size = 200
-  const cell = size / 3
-  const half = cell / 2
-
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      aria-hidden
-      style={{
-        transform: `scale(${0.55 + display * 0.45})`,
-        opacity: 0.28 + display * 0.72,
-        transition: 'transform 100ms linear, opacity 100ms linear',
-      }}
-    >
-      {TILE_COLORS.map((fill, i) => {
-        const col = i % 3
-        const row = Math.floor(i / 3)
-        const cx = col * cell + half
-        const cy = row * cell + half
-        const r = half * (0.55 + display * 0.35)
-        const d = `M${cx} ${cy - r} L${cx + r} ${cy} L${cx} ${cy + r} L${cx - r} ${cy} Z`
-        return (
-          <path
-            key={i}
-            d={d}
-            fill={fill}
-            opacity={0.4 + (i % 3) * 0.18}
-          />
-        )
-      })}
-    </svg>
-  )
-}
-
+/**
+ * The loader prints the wordmark. A hot line rises through "MADE TO HOLD"
+ * exactly the way the bed lays a part, so the site's first gesture is already
+ * the brand's only gesture.
+ */
 export function Overture({ progress, onDone }: OvertureProps) {
   const [elapsed, setElapsed] = useState(0)
-  const [phase, setPhase] = useState<Phase>('loading')
-  const [exiting, setExiting] = useState(false)
+  const [phase, setPhase] = useState<Phase>('printing')
   const onDoneRef = useRef(onDone)
-  const finishStartedRef = useRef(false)
-  const doneFiredRef = useRef(false)
-
+  const fired = useRef(false)
   onDoneRef.current = onDone
 
   useEffect(() => {
@@ -84,87 +45,84 @@ export function Overture({ progress, onDone }: OvertureProps) {
     return () => cancelAnimationFrame(raf)
   }, [])
 
-  // UI-only ramp so the counter isn't stuck at 0% if parent progress lags.
-  const timedRamp = Math.min(1, elapsed / MIN_MS)
-  const display = Math.max(progress, timedRamp)
-  const canFinish = progress >= DONE_THRESHOLD && elapsed >= MIN_MS
+  // UI ramp so the counter never sits at zero while assets decode.
+  const ramp = Math.min(1, elapsed / MIN_MS)
+  const shown = Math.max(progress, ramp * 0.99)
+  const ready = progress >= DONE && elapsed >= MIN_MS
 
   useEffect(() => {
-    if (phase !== 'loading' || !canFinish || finishStartedRef.current) return
-    finishStartedRef.current = true
-    setPhase('ready')
-  }, [canFinish, phase])
+    if (phase === 'printing' && ready) setPhase('ready')
+  }, [ready, phase])
 
   useEffect(() => {
     if (phase !== 'ready') return
-    const hold = window.setTimeout(() => setExiting(true), READY_HOLD_MS)
-    return () => window.clearTimeout(hold)
+    const id = window.setTimeout(() => setPhase('exit'), READY_HOLD_MS)
+    return () => window.clearTimeout(id)
   }, [phase])
 
   useEffect(() => {
-    if (!exiting || doneFiredRef.current) return
-    const fade = window.setTimeout(() => {
-      doneFiredRef.current = true
-      setPhase('out')
+    if (phase !== 'exit' || fired.current) return
+    fired.current = true
+    const id = window.setTimeout(() => {
+      setPhase('gone')
       onDoneRef.current()
-    }, FADE_MS)
-    return () => window.clearTimeout(fade)
-  }, [exiting])
+    }, EXIT_MS)
+    return () => window.clearTimeout(id)
+  }, [phase])
 
-  if (phase === 'out') return null
+  if (phase === 'gone') return null
 
-  const showReady = phase === 'ready'
+  const pct = Math.round(shown * 100)
+  const layer = Math.round(shown * LAYER_TOTAL)
+  const cut = (1 - shown) * 100
+  const isReady = phase !== 'printing'
 
   return (
     <div
+      className={`overture${phase === 'exit' ? ' is-exit' : ''}`}
       role="status"
       aria-live="polite"
-      aria-label={
-        showReady ? 'Ready to hold.' : `Loading ${Math.round(display * 100)} percent`
-      }
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 10000,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '1.75rem',
-        background: 'var(--bg)',
-        color: 'var(--bone)',
-        opacity: exiting ? 0 : 1,
-        transition: `opacity ${FADE_MS}ms ease`,
-        pointerEvents: exiting ? 'none' : 'auto',
-      }}
+      aria-label={isReady ? 'Ready to hold' : `Printing ${pct} percent`}
     >
-      <ZellijGrid display={display} />
+      <div className="overture__inner">
+        <div className="overture__mark" aria-hidden>
+          <span className="overture__ghost">
+            Made
+            <br />
+            to hold.
+          </span>
+          <span
+            className="overture__fill"
+            style={{ clipPath: `inset(${cut}% 0 0 0)` }}
+          >
+            Made
+            <br />
+            to hold.
+          </span>
+          <span
+            className="overture__line"
+            style={{ top: `${cut}%`, opacity: isReady ? 0 : 1 }}
+          />
+        </div>
 
-      {showReady ? (
-        <p
-          style={{
-            margin: 0,
-            fontFamily: 'var(--font-sans)',
-            fontSize: '1.125rem',
-            letterSpacing: '0.04em',
-            color: 'var(--bone)',
-          }}
-        >
-          Ready to hold.
-        </p>
-      ) : (
-        <p
-          style={{
-            margin: 0,
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.95rem',
-            letterSpacing: '0.08em',
-            color: 'var(--muted)',
-          }}
-        >
-          {`${Math.round(display * 100)}%`}
-        </p>
-      )}
+        <div className="overture__meta">
+          <span className="overture__log">
+            {isReady ? 'ready to hold' : LOG[Math.min(LOG.length - 1, Math.floor(shown * LOG.length))]}
+          </span>
+          <span className="overture__count">
+            {isReady
+              ? `${LAYER_TOTAL} / ${LAYER_TOTAL}`
+              : `${String(layer).padStart(4, '0')} / ${LAYER_TOTAL}`}
+          </span>
+        </div>
+
+        <div className="overture__bar">
+          <span
+            className="overture__bar-fill"
+            style={{ transform: `scaleX(${shown})` }}
+          />
+        </div>
+      </div>
     </div>
   )
 }

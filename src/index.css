@@ -1,20 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  --bg: #0e0d0f;
-  --bg-plaster: #1a1720;
-  --majorelle: #3b33e0;
-  --majorelle-bright: #5b4bff;
-  --saffron: #e8a13a;
-  --terracotta: #c05a3e;
-  --zellij-green: #1f6e5c;
-  --bone: #ede6d8;
-  --muted: #8a8494;
+  /* — Rebrand: The Print Line — */
+  --ink: #07070a;
+  --ink-raised: #111019;
+  --majorelle: #3b2fe8;
+  --majorelle-bright: #6b5bff;
+  --ember: #ff6a2b;
+  --amber: #ffb45c;
+  --jade: #1f6e5c;
+  --bone: #f2ede3;
+  --muted: #8e8a9c;
 
-  --font-display: 'Clash Display', sans-serif;
-  --font-sans: 'Space Grotesk', sans-serif;
-  --font-mono: 'Space Mono', monospace;
+  --line: rgba(242, 237, 227, 0.1);
+  --line-soft: rgba(242, 237, 227, 0.055);
+
+  --font-display: 'Syne', 'Space Grotesk', sans-serif;
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
   --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+
+  color-scheme: dark;
 }
 
 html,
@@ -24,14 +33,27 @@ body,
   min-height: 100%;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--ink);
   color: var(--bone);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 #root {
-  /* Allow document scroll for Lenis on `/`; lab stays 100vh */
-  overflow-x: hidden;
+  /* `clip` — not `hidden`. `overflow-x: hidden` computes `overflow-y: auto`,
+     which makes #root the scroll container and freezes window.scrollY, and the
+     whole stage is driven by window scroll. */
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--ember);
+  color: var(--ink);
 }
